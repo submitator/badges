@@ -7,7 +7,8 @@
 //
 // Projects (projects.mjs): ...0001 a good wall, ...0002 a bad signature,
 // ...0003 503 (the kill switch), ...0004 a good wall 3 s late, ...0005 an
-// expired wall, ...0006 one badge the package must leave out. Others: 404.
+// expired wall, ...0006 one badge the package must leave out, ...0007 a link
+// whose href and title hold & and quotes. Others: 404.
 //
 // Test hooks:
 //   POST /__bump?project=<id>  adds a directory badge and signs a newer wall
@@ -21,6 +22,7 @@ import {
   BAD_BADGE,
   BUMP_BADGE,
   DEFAULT_PORT,
+  HOSTILE_BADGE,
   PROJECTS,
   TEST_KEY,
   goodBadges,
@@ -72,6 +74,7 @@ export function startMockServer({ port = DEFAULT_PORT, host = "127.0.0.1" } = {}
     issued.set(project, issuedMs);
     let badges = [...goodBadges(project), ...(bumps.get(project) ?? [])];
     if (project === PROJECTS.oneBadBadge) badges = [badges[0], BAD_BADGE, ...badges.slice(1)];
+    if (project === PROJECTS.hostile) badges = [badges[0], HOSTILE_BADGE];
     if (project === PROJECTS.expired) issuedMs = nowMs - 8 * DAY_MS;
     return {
       v: 1,

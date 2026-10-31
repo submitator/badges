@@ -13,6 +13,8 @@ the way directories and our badge checks read it.
 | `sveltekit`             | SvelteKit: the layout's server `load` plus `BadgeWall` in the layout             |
 | `astro-ssr`             | Astro with the Node adapter: the homepage renders on demand                      |
 | `astro-static`          | Astro static output: badges from build time                                      |
+| `astro4-floor`          | Astro 4.16 (the oldest major the peer range allows), static, plus `/hostile`     |
+| `astro5-floor`          | Astro 5.18, static, plus `/hostile`                                              |
 | `node-http`             | A plain Node.js server: `fetchWall` and `wallToHtml`                             |
 | `next-client-only`      | Do not copy: a client component fills the wall in `useEffect`                    |
 | `nuxt-client-only`      | Do not copy: the wall inside `<ClientOnly>`                                      |
@@ -40,6 +42,9 @@ the mock wall server on 127.0.0.1:4010, installs, builds and starts the app on
 - directory links outside `span.sbm-cb`, custom badge links inside it;
 - links in the loop copy and fill items with `tabindex="-1"`;
 - a page rendering a wall with a bad signature still answers 200 and shows no wall;
+- the Astro floors: `/hostile` renders project `...0007`, whose link has `&` and quotes in its
+  `href` and `title`. Astro 4 and 5 write such a URL unescaped when it is a plain string, so its
+  quote would end the attribute; both attributes must come out whole;
 - every wall request: the User-Agent of CONTRACT.md section 1 with the app's
   framework, no dev token, no `Origin`, no cookie;
 - `next-app`: `s-maxage=15` on two pages, and a badge added on the server shows
@@ -48,7 +53,7 @@ the mock wall server on 127.0.0.1:4010, installs, builds and starts the app on
 Options: `--tarball <path>` installs a tarball you packed, `--save-page` writes
 the homepage to `test/fixtures/contract-v1/pages/<app>.html` (the backend
 vendors these pages for its own checks), `--latest` moves the frameworks to
-`@latest`, as the weekly CI job does.
+`@latest`, as the weekly CI job does (never the two Astro floors).
 
 ## The mock wall server
 
@@ -65,6 +70,7 @@ behaviour, see `mock-wall-server/projects.mjs`:
 | `00000000-0000-4000-8000-000000000004` | a good wall after 3 seconds                       |
 | `00000000-0000-4000-8000-000000000005` | a wall that expired a day ago                     |
 | `00000000-0000-4000-8000-000000000006` | a good wall plus one badge the package leaves out |
+| `00000000-0000-4000-8000-000000000007` | the self badge and a link with `&` and quotes     |
 
 `POST /__bump?project=<id>` adds a directory badge, `GET /__requests` lists the
 wall requests with their headers, `POST /__reset` forgets both.

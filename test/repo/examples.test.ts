@@ -2,8 +2,18 @@
 // accepts, and check-html.mjs must pass a good page and catch the faults it
 // looks for. The example apps themselves run in CI (examples/run-example.mjs).
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
-import { inspectPage, refCount, selfCheckCount } from "../../examples/check-html.mjs";
-import { PROJECTS, PUBLIC_KEYS, expectedWall } from "../../examples/mock-wall-server/projects.mjs";
+import {
+  hostileLinkProblems,
+  inspectPage,
+  refCount,
+  selfCheckCount,
+} from "../../examples/check-html.mjs";
+import {
+  HOSTILE_URL,
+  PROJECTS,
+  PUBLIC_KEYS,
+  expectedWall,
+} from "../../examples/mock-wall-server/projects.mjs";
 import { startMockServer } from "../../examples/mock-wall-server/server.mjs";
 import { createClient, defaultEnv } from "../../src/client.js";
 import { wallToHtml } from "../../src/html.js";
@@ -53,6 +63,14 @@ describe("mock wall server", () => {
     const wall = await fetchFromMock(PROJECTS.oneBadBadge);
     expect(wall?.skipped).toBe(1);
     expect(wall?.badges).toHaveLength(7);
+  });
+
+  test("serves project 0007: the self badge and a link with & and quotes, accepted whole", async () => {
+    const wall = await fetchFromMock(PROJECTS.hostile);
+    expect(wall?.badges.map((badge) => badge.kind)).toEqual(["self", "directory"]);
+    expect(wall?.badges[1]?.tree).toEqual([
+      { t: "a", a: { href: HOSTILE_URL, title: HOSTILE_URL }, c: ["Hostile"] },
+    ]);
   });
 
   test("signs a newer wall with one more badge after a bump", async () => {
@@ -154,6 +172,28 @@ describe("check-html", () => {
     expect(inspectPage(html, { project: PROJECTS.good }).problems).toEqual([
       "expected one style element, found 2",
       "a script element sits inside the wall",
+    ]);
+  });
+
+  test("passes a link holding & and quotes when both its attributes stay whole", async () => {
+    const html = page(wallToHtml(await fetchFromMock(PROJECTS.hostile)));
+    expect(hostileLinkProblems(html, HOSTILE_URL)).toEqual([]);
+  });
+
+  // What Astro 4 and 5 write for a plain-string URL holding &: the URL as it is.
+  test("catches a link whose quote ended the attribute", async () => {
+    const html = page(wallToHtml(await fetchFromMock(PROJECTS.hostile)));
+    const escaped = HOSTILE_URL.replaceAll("&", "&amp;").replaceAll('"', "&quot;");
+    expect(html).toContain(`href="${escaped}"`);
+    const unescaped = html.replaceAll(`href="${escaped}"`, `href="${HOSTILE_URL}"`);
+    expect(hostileLinkProblems(unescaped, HOSTILE_URL)).toEqual([
+      expect.stringContaining('onmouseover="alert(1)'),
+    ]);
+  });
+
+  test("reports a page without the link", () => {
+    expect(hostileLinkProblems(page("nothing"), HOSTILE_URL)).toEqual([
+      "no link to https://hostile.example.com",
     ]);
   });
 });

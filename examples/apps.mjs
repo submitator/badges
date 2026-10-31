@@ -6,6 +6,7 @@
 // framework: the User-Agent token the app's wall requests must carry.
 // negative:  a client-only render; the self-check must find 0.
 // broken:    a page rendering the bad-signature project: 200 and no wall.
+// hostile:   a page rendering the hostile project: its link attributes stay whole.
 // pages:     more pages that must pass the self-check.
 // lifetime:  pages whose Cache-Control must say this (Next.js ISR, pitfall 2).
 // bump:      seconds to wait for a badge added on the server to show up.
@@ -57,6 +58,20 @@ export const APPS = {
     framework: "astro",
     broken: "/broken",
     latest: ["astro"],
+  },
+  // The oldest Astro majors the peer range allows, which write a plain-string
+  // URL holding & unescaped: Node.astro must escape it there too. Never moved.
+  "astro4-floor": {
+    framework: "astro",
+    broken: "/broken",
+    hostile: "/hostile",
+    latest: [],
+  },
+  "astro5-floor": {
+    framework: "astro",
+    broken: "/broken",
+    hostile: "/hostile",
+    latest: [],
   },
   "node-http": {
     framework: "node",

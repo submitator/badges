@@ -25,6 +25,8 @@ export const PROJECTS = Object.freeze({
   expired: "00000000-0000-4000-8000-000000000005",
   /** A good wall plus one badge the package must leave out. */
   oneBadBadge: "00000000-0000-4000-8000-000000000006",
+  /** The self pill and a link whose href and title hold & and quotes (HOSTILE_URL). */
+  hostile: "00000000-0000-4000-8000-000000000007",
 });
 
 /** The `publicKeys` option for the mock: the RFC 8032 test key, never a production key. */
@@ -68,6 +70,22 @@ export const BAD_BADGE = Object.freeze({
   name: "Event handler",
   host: "bad.example.com",
   tree: [{ t: "a", a: { href: "https://bad.example.com", onclick: "steal()" }, c: ["Bad"] }],
+});
+
+/**
+ * A URL the contract allows (it is never normalized) holding & and quotes.
+ * Astro 4 and 5 write a plain-string http(s) URL with & in it unescaped: the
+ * quote would end the attribute and the rest would become an event handler.
+ */
+export const HOSTILE_URL = 'https://hostile.example.com/?a=1&b=" onmouseover="alert(1)';
+
+/** The directory badge of the hostile wall: one link with HOSTILE_URL as href and title. */
+export const HOSTILE_BADGE = Object.freeze({
+  kind: "directory",
+  id: "d_00000000-0000-4000-8000-000000000097",
+  name: "Hostile",
+  host: "hostile.example.com",
+  tree: [{ t: "a", a: { href: HOSTILE_URL, title: HOSTILE_URL }, c: ["Hostile"] }],
 });
 
 /** Normalized host of a URL as the server writes `host`: lowercase, no `www.`. */

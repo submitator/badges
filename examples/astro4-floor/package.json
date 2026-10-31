@@ -1,0 +1,15 @@
+{
+  "name": "example-astro4-floor",
+  "version": "0.0.0",
+  "private": true,
+  "description": "@submitator/badges in Astro 4, an old major the peer range allows: a static site, plus a page whose badge link holds & and quotes in its URL.",
+  "type": "module",
+  "scripts": {
+    "build": "astro build",
+    "start": "node ../serve-static.mjs"
+  },
+  "dependencies": {
+    "@submitator/badges": "file:../.pack/submitator-badges.tgz",
+    "astro": "4.16.19"
+  }
+}

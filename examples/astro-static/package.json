@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "astro build",
-    "start": "node serve.mjs"
+    "start": "node ../serve-static.mjs"
   },
   "dependencies": {
     "@submitator/badges": "file:../.pack/submitator-badges.tgz",

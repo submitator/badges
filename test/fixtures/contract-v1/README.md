@@ -84,9 +84,9 @@ outside `span.sbm-cb` in them.
 
 The homepage of every example app in `examples/`, byte for byte as its server
 sent it: real framework output (Next.js App Router, Cache Components and Pages
-Router, Nuxt, SvelteKit, Astro on demand and static, plain Node.js), scripts
-and hydration data included, which is what the server's checks meet on
-customer sites. `node examples/run-example.mjs <app> --save-page` writes one;
+Router, Nuxt, SvelteKit, Astro on demand and static, Astro 4 and 5, plain
+Node.js), scripts and hydration data included, which is what the server's
+checks meet on customer sites. `node examples/run-example.mjs <app> --save-page` writes one;
 CI builds all of them on every run and uploads them as the `contract-v1-pages`
 artifact.
 

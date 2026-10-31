@@ -1,11 +1,12 @@
-// Serves the built site (dist/) like a static host would: files as they are,
-// a folder as its index.html. Used instead of `astro preview`, which may start
-// in the background and outlive the example run.
+// Serves the built site (dist/ of the working directory) like a static host
+// would: files as they are, a folder as its index.html. The static Astro apps
+// start it from their own folder. Used instead of `astro preview`, which may
+// start in the background and outlive the example run.
 import { readFile } from "node:fs/promises";
 import { createServer } from "node:http";
-import { extname, join, normalize } from "node:path";
+import { extname, join, normalize, resolve, sep } from "node:path";
 
-const root = new URL("./dist/", import.meta.url).pathname;
+const root = resolve("dist") + sep;
 const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css", ".js": "text/javascript" };
 
 createServer(async (request, response) => {

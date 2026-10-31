@@ -110,6 +110,8 @@ jobs:
           - sveltekit
           - astro-ssr
           - astro-static
+          - astro4-floor
+          - astro5-floor
           - node-http
           - next-client-only
           - nuxt-client-only

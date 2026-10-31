@@ -168,6 +168,32 @@ export function inspectPage(html, { project, expected, negative = false }) {
   return { problems, notes };
 }
 
+/**
+ * Checks a page rendering a link whose href and title are `url` (the mock's
+ * hostile wall: & and quotes in a URL). Each such link must hold exactly those
+ * two attributes, whole. A renderer that writes the URL unescaped lets its
+ * quote end the attribute, and the rest becomes attributes of its own.
+ *
+ * @param {string} html
+ * @param {string} url
+ * @returns {string[]} problems, empty when every link is whole
+ */
+export function hostileLinkProblems(html, url) {
+  const origin = new URL(url).origin;
+  const links = elementsUnder(parse(html)).filter(
+    (element) => element.tagName === "a" && (attr(element, "href") ?? "").startsWith(origin),
+  );
+  if (links.length === 0) return [`no link to ${origin}`];
+  const problems = [];
+  for (const link of links) {
+    const attrs = link.attrs.map(({ name, value }) => `${name}=${JSON.stringify(value)}`);
+    const whole = `href=${JSON.stringify(url)} title=${JSON.stringify(url)}`;
+    if (attrs.join(" ") !== whole)
+      problems.push(`a link to ${origin} came out as: ${attrs.join(" ")}`);
+  }
+  return problems;
+}
+
 function option(name) {
   const index = process.argv.indexOf(`--${name}`);
   return index > 0 ? process.argv[index + 1] : undefined;

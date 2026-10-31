@@ -17,8 +17,8 @@ import { copyFileSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { APPS } from "./apps.mjs";
-import { inspectPage, selfCheckCount } from "./check-html.mjs";
-import { PROJECTS, expectedWall } from "./mock-wall-server/projects.mjs";
+import { hostileLinkProblems, inspectPage, selfCheckCount } from "./check-html.mjs";
+import { HOSTILE_URL, PROJECTS, expectedWall } from "./mock-wall-server/projects.mjs";
 import { startMockServer } from "./mock-wall-server/server.mjs";
 
 const examples = fileURLToPath(new URL("./", import.meta.url));
@@ -192,6 +192,12 @@ async function checkApp(mock, packageVersion) {
       selfCheckCount(broken.html, PROJECTS.badSignature) === 0,
       `a wall with a bad signature was rendered on ${config.broken}`,
     );
+  }
+  if (config.hostile !== undefined) {
+    const hostile = await get(config.hostile);
+    check(hostile.status === 200, `GET ${config.hostile} answered ${hostile.status}`);
+    problems.push(...hostileLinkProblems(hostile.html, HOSTILE_URL));
+    notes.push(`${config.hostile}: links holding & and quotes checked`);
   }
 
   const walls = mock.requests.filter((request) =>

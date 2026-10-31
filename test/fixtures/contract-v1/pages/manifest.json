@@ -21,6 +21,16 @@
       "framework": "astro",
       "badge": "found"
     },
+    "astro4-floor": {
+      "file": "astro4-floor.html",
+      "framework": "astro",
+      "badge": "found"
+    },
+    "astro5-floor": {
+      "file": "astro5-floor.html",
+      "framework": "astro",
+      "badge": "found"
+    },
     "next-app": {
       "file": "next-app.html",
       "framework": "next",

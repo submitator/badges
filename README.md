@@ -294,9 +294,9 @@ Where a runtime cannot check Ed25519 signatures, the package shows no badges and
 There is no unverified mode.
 
 Frameworks tested in CI with real apps: Next.js 16 (App Router, Cache Components, Pages Router),
-Nuxt 4, SvelteKit 3, Astro 7, and a plain Node.js server. The render tests also cover React 18.3
-and 19, Vue 3.4 and 3.5 and Svelte 5. The peer ranges: `react` 18.3 or later, `vue` 3.4 or later,
-`svelte` 5 or later, `astro` 4 or later, each optional.
+Nuxt 4, SvelteKit 3, Astro 7 (and the oldest majors, Astro 4 and 5), and a plain Node.js server.
+The render tests also cover React 18.3 and 19, Vue 3.4 and 3.5 and Svelte 5. The peer ranges:
+`react` 18.3 or later, `vue` 3.4 or later, `svelte` 5 or later, `astro` 4 or later, each optional.
 
 ## Troubleshooting
 
