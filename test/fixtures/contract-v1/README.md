@@ -60,6 +60,14 @@ Package details the server can rely on:
 `body` is the exact response body. They come from `scripts/write-fixtures.mjs`
 too, signed with the test key.
 
+Signatures and public keys are canonical base64url (RFC 4648 section 3.5):
+the unused low bits of the last character are zero. CONTRACT.md does not say
+so; the package requires it, and refuses a non-canonical signature with
+`envelope` (`signature-non-canonical.json`), although a lenient decoder gets
+the same 64 bytes from it. Decode strictly when you run these files (Ruby's
+`Base64.urlsafe_decode64` does; `unpack1("m")` does not), or check that
+encoding the bytes again gives back the same text.
+
 ## rendered/*.html
 
 `wallToHtml` output for every accepted wall that has badges:
