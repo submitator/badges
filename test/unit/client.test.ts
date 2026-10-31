@@ -406,7 +406,22 @@ describe("failures", () => {
     expect(t.wallRequests()).toHaveLength(2);
   });
 
-  test("reads Retry-After as an HTTP date too, and on 429", () => {
+  test.each([
+    [429, 120_000],
+    [404, 30_000],
+  ])("after a %i with Retry-After: 120, waits %i ms", async (status, wait) => {
+    const t = setup();
+    t.replyWith(() => respond(status, [], { "retry-after": "120" }));
+    await t.call();
+    vi.advanceTimersByTime(wait - 1);
+    await t.call();
+    expect(t.wallRequests()).toHaveLength(1);
+    vi.advanceTimersByTime(1);
+    await t.call();
+    expect(t.wallRequests()).toHaveLength(2);
+  });
+
+  test("reads Retry-After as an HTTP date too", () => {
     expect(retryAfterMs(new Date(T0 + 90_000).toUTCString(), T0)).toBe(90_000);
     expect(retryAfterMs(null, T0)).toBe(30_000);
   });
