@@ -61,6 +61,11 @@ describe("repo hygiene", () => {
     expect(textFiles.filter((path) => ASSEMBLED_WORD.test(read(path)))).toEqual([]);
   });
 
+  test("no raw control character other than TAB, LF and CR in any text file", () => {
+    const control = /[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/;
+    expect(textFiles.filter((path) => control.test(read(path)))).toEqual([]);
+  });
+
   test("src/version.ts matches package.json", () => {
     const { version } = JSON.parse(read("package.json")) as { version: string };
     expect(VERSION).toBe(version);

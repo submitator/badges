@@ -106,6 +106,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "pack:check": "node scripts/check-pack.mjs",
+    "check:keys": "node scripts/check-keys.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "version": "node scripts/write-version.mjs && git add src/version.ts"

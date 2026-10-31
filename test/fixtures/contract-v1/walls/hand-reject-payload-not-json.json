@@ -1,0 +1,12 @@
+{
+  "name": "hand-reject-payload-not-json",
+  "now": "2026-11-02T00:00:00Z",
+  "project": "8b0c2f4e-6a51-4c1e-9f3d-2a7b5c9e1d40",
+  "payload": "{\"v\":1,\"project\":",
+  "expect": {
+    "ok": false,
+    "reason": "payload",
+    "ids": [],
+    "skipped": 0
+  }
+}
