@@ -1,15 +1,7 @@
 import { fileURLToPath } from "node:url";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import { defineConfig } from "vitest/config";
-
-/**
- * The shipped Svelte and Astro sources import the core as ../dist/index.js;
- * tests point that at the TypeScript source, so they need no build.
- */
-const distToSource = {
-  find: /^\.\.\/dist\/index\.js$/,
-  replacement: fileURLToPath(new URL("./src/index.ts", import.meta.url)),
-};
+import { distToSource } from "./test/support/aliases.js";
 
 /** React 18.3 lives in an npm workspace (test/floors/react18); see its package.json. */
 const react18 = (path: string) =>
@@ -94,6 +86,7 @@ export default defineConfig({
           environment: "happy-dom",
         },
       },
+      "./vitest.astro.config.ts",
     ],
   },
 });

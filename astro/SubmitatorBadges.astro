@@ -1,0 +1,17 @@
+---
+// Fetches your project's wall on the server and renders it. Renders nothing
+// when there is no wall to show. The template holds no whitespace.
+import { fetchWall } from "../dist/index.js";
+import type { FetchWallOptions, Layout } from "../dist/index.js";
+import BadgeWall from "./BadgeWall.astro";
+
+interface Props extends FetchWallOptions {
+  layout?: Layout | undefined;
+  class?: string | undefined;
+  nonce?: string | undefined;
+}
+
+const { layout, class: className, nonce, ...options } = Astro.props;
+const wall = await fetchWall({ ...options, framework: options.framework ?? "astro" });
+---
+{wall && <BadgeWall wall={wall} layout={layout} class={className} nonce={nonce} />}

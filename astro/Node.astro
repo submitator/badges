@@ -1,0 +1,29 @@
+---
+// One element of a wall's view tree, then its children, written with Astro's
+// own escaping (never set:html).
+// - Attribute values go in as String objects and the style as an object:
+//   Astro 4 and 5 write a plain string that is an http(s) URL holding "&"
+//   without escaping it, quotes included. Both forms are escaped by every
+//   Astro from 4 to 7. An object keeps one value per style property: the last.
+// - The template is one expression with no whitespace: a space between two
+//   tags would be a visible space inside a badge. Never reformat this file.
+import type { ViewNode } from "../dist/index.js";
+
+interface Props {
+  node: ViewNode;
+}
+
+const { node } = Astro.props;
+const Tag = node.tag;
+const attributes: Record<string, unknown> = {};
+for (const [name, value] of node.attrs) attributes[name] = new String(value);
+if (node.style !== undefined && node.style.length > 0) {
+  const style: Record<string, string> = {};
+  for (const [property, value] of node.style) {
+    delete style[property];
+    style[property] = value;
+  }
+  attributes["style"] = style;
+}
+---
+{node.tag === "img" ? <Tag {...attributes} /> : <Tag {...attributes}>{node.children.map((child) => (typeof child === "string" ? child : <Astro.self node={child} />))}</Tag>}

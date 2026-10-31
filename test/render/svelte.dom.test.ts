@@ -10,6 +10,7 @@ import type { MockInstance } from "vitest";
 import { wallToHtml } from "../../src/html.js";
 import type { Wall, WallRenderOptions } from "../../src/types.js";
 import { BadgeWall } from "../../svelte/index.js";
+import { distToSource } from "../support/aliases.js";
 import { shape, wallNamed, wallRoot, WALLS } from "../support/render.js";
 
 const SVG = "http://www.w3.org/2000/svg";
@@ -32,14 +33,7 @@ beforeAll(async () => {
     appType: "custom",
     server: { middlewareMode: true, hmr: false, ws: false },
     plugins: [svelte({ configFile: false })],
-    resolve: {
-      alias: [
-        {
-          find: /^\.\.\/dist\/index\.js$/,
-          replacement: new URL("../../src/index.ts", import.meta.url).pathname,
-        },
-      ],
-    },
+    resolve: { alias: [distToSource] },
   });
 });
 

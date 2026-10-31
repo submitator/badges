@@ -1,0 +1,18 @@
+---
+// A wall rendered by Astro on the server. Renders nothing for a null,
+// undefined, empty or malformed wall. The template holds no whitespace.
+import { layoutWall } from "../dist/index.js";
+import type { Layout, Wall } from "../dist/index.js";
+import Node from "./Node.astro";
+
+interface Props {
+  wall: Wall | null | undefined;
+  layout?: Layout | undefined;
+  class?: string | undefined;
+  nonce?: string | undefined;
+}
+
+const { wall, layout, class: className, nonce } = Astro.props;
+const view = layoutWall(wall, { layout, className, nonce });
+---
+{view && <Node node={view} />}
