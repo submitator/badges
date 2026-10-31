@@ -1,8 +1,13 @@
-// Checks what `npm pack` would ship: only the allowed paths, the files every
-// install needs, no path with a `server` segment (SvelteKit treats those as
-// server-only) and no test key in shipped code. Run it after `npm run build`.
+// Checks what `npm pack` would ship:
+// - only the allowed paths, and every file the exports map points at;
+// - no path with a `server` segment (SvelteKit treats those as server-only);
+// - no test key in shipped code;
+// - every relative import of the shipped Svelte and Astro sources resolves to
+//   a shipped file (they import the core as ../dist/index.js).
+// Run it after `npm run build`.
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
+import { posix } from "node:path";
 import { pathToFileURL } from "node:url";
 
 const root = new URL("../", import.meta.url);
@@ -17,14 +22,25 @@ export function packedPaths() {
   return entry.files.map((file) => file.path).sort();
 }
 
+/** Every file an exports map points at, without the leading "./". */
+export function exportTargets(exportsField) {
+  const targets = new Set();
+  const visit = (value) => {
+    if (typeof value === "string") targets.add(value.replace(/^\.\//, ""));
+    else if (value !== null && typeof value === "object") Object.values(value).forEach(visit);
+  };
+  visit(exportsField);
+  return [...targets].sort();
+}
+
+const manifest = JSON.parse(readFileSync(new URL("package.json", root), "utf8"));
 const ALLOWED_FILES = new Set(["package.json", "README.md", "LICENSE", "CHANGELOG.md"]);
 const ALLOWED_DIRS = ["dist/", "svelte/", "astro/"];
 export const REQUIRED = [
   "package.json",
   "LICENSE",
   "CHANGELOG.md",
-  "dist/index.js",
-  "dist/index.d.ts",
+  ...exportTargets(manifest.exports).filter((path) => path !== "package.json"),
 ];
 const SERVER_SEGMENT = /(?:^|\/)server(?:[./]|$)/;
 // RFC 8032 TEST 1, the public test key and its seed: never in shipped code.
@@ -33,6 +49,14 @@ const TEST_KEY_PARTS = [
   "nWGxne_9WmC6hEr0kuwsxERJxWl7MmkZcDusAxyuf2A",
   "test-rfc8032-1",
 ];
+// Component sources ship as written: their relative imports must stay inside the tarball.
+const SOURCE_DIRS = ["svelte/", "astro/"];
+const RELATIVE_IMPORT = /(?:\bfrom|\bimport)\s*\(?\s*["'](\.\.?\/[^"']+)["']/g;
+
+/** The relative specifiers a source file imports, in order. */
+export function relativeImports(text) {
+  return [...text.matchAll(RELATIVE_IMPORT)].map((match) => match[1]);
+}
 
 /**
  * Returns the problems with a list of packed paths (empty when all is well).
@@ -40,20 +64,26 @@ const TEST_KEY_PARTS = [
  */
 export function packProblems(paths, { requireBuild = true, read = readShipped } = {}) {
   const problems = [];
+  const shipped = new Set(paths);
   for (const path of paths) {
     const inDir = ALLOWED_DIRS.some((dir) => path.startsWith(dir));
     if (!ALLOWED_FILES.has(path) && !inDir) problems.push(`not allowed in the tarball: ${path}`);
     if (SERVER_SEGMENT.test(path)) problems.push(`path has a server segment: ${path}`);
-    if (inDir) {
-      const text = read(path);
-      for (const part of TEST_KEY_PARTS) {
-        if (text.includes(part)) problems.push(`test key material in ${path}`);
-      }
+    if (!inDir) continue;
+    const text = read(path);
+    for (const part of TEST_KEY_PARTS) {
+      if (text.includes(part)) problems.push(`test key material in ${path}`);
+    }
+    if (!SOURCE_DIRS.some((dir) => path.startsWith(dir))) continue;
+    for (const specifier of relativeImports(text)) {
+      const target = posix.normalize(posix.join(posix.dirname(path), specifier));
+      if (!requireBuild && target.startsWith("dist/")) continue;
+      if (!shipped.has(target)) problems.push(`${path} imports ${specifier}, which is not shipped`);
     }
   }
   const required = requireBuild ? REQUIRED : REQUIRED.filter((path) => !path.startsWith("dist/"));
   for (const path of required) {
-    if (!paths.includes(path)) problems.push(`missing from the tarball: ${path}`);
+    if (!shipped.has(path)) problems.push(`missing from the tarball: ${path}`);
   }
   return problems;
 }

@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
-import { packedPaths, packProblems } from "../../scripts/check-pack.mjs";
+import { packedPaths, packProblems, REQUIRED } from "../../scripts/check-pack.mjs";
 import { VERSION } from "../../src/version.js";
 
 const root = new URL("../../", import.meta.url);
@@ -84,13 +84,42 @@ describe("repo hygiene", () => {
     const problems = packProblems(["package.json", "src/index.ts", ...Object.keys(files)], {
       read: (path: string) => files[path] ?? "",
     });
-    expect(problems).toEqual([
+    expect(problems.slice(0, 5)).toEqual([
       "not allowed in the tarball: src/index.ts",
       "path has a server segment: dist/server/wall.js",
       "test key material in dist/keys.js",
       "missing from the tarball: LICENSE",
       "missing from the tarball: CHANGELOG.md",
-      "missing from the tarball: dist/index.d.ts",
+    ]);
+    expect(problems).toContain("missing from the tarball: dist/index.d.ts");
+  });
+
+  test("every file the exports map points at must ship: core, React, Vue, Svelte and Astro", () => {
+    expect(REQUIRED).toEqual(
+      expect.arrayContaining([
+        "dist/index.js",
+        "dist/index.d.ts",
+        "dist/react.js",
+        "dist/react.d.ts",
+        "dist/vue.js",
+        "dist/vue.d.ts",
+        "svelte/index.js",
+        "svelte/index.d.ts",
+        "astro/index.js",
+        "astro/index.d.ts",
+      ]),
+    );
+  });
+
+  test("the pack check refuses a component source importing a file that is not shipped", () => {
+    const files: Record<string, string> = {
+      "svelte/index.js": 'export { default as BadgeWall } from "./BadgeWall.svelte";',
+      "astro/Node.astro": '---\nimport { styleText } from "../dist/layout.js";\n---',
+    };
+    const shipped = [...new Set([...REQUIRED, ...Object.keys(files)])];
+    expect(packProblems(shipped, { read: (path: string) => files[path] ?? "" })).toEqual([
+      "svelte/index.js imports ./BadgeWall.svelte, which is not shipped",
+      "astro/Node.astro imports ../dist/layout.js, which is not shipped",
     ]);
   });
 });
