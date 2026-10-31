@@ -1,0 +1,32 @@
+# Weekly updates. The example apps are not listed: their frameworks are pinned
+# on purpose, and the weekly CI job runs them on the latest releases instead.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      dev-dependencies:
+        dependency-type: development
+        update-types: [minor, patch]
+    ignore:
+      # The oldest versions the package supports, tested on purpose: React 18.3
+      # (the test/floors/react18 workspace) and Vue 3.4 (the vue34 alias).
+      - dependency-name: react
+        update-types: ["version-update:semver-major"]
+      - dependency-name: react-dom
+        update-types: ["version-update:semver-major"]
+      - dependency-name: vue34
+  - package-ecosystem: npm
+    directory: /test/smoke/workerd
+    schedule:
+      interval: weekly
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
