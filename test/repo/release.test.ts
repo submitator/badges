@@ -106,3 +106,30 @@ describe("release scripts", () => {
     expect(changelogSection("## 10.0.0\n- y", "1.0.0")).toBeNull();
   });
 });
+
+describe("release.yml", () => {
+  const workflow = read(".github/workflows/release.yml");
+
+  /** Where `text` first appears in release.yml. */
+  function at(text: string): number {
+    const index = workflow.indexOf(text);
+    expect(index, `release.yml has ${text}`).toBeGreaterThanOrEqual(0);
+    return index;
+  }
+
+  // RELEASING.md forbids rerunning a job after it staged: a missing CHANGELOG
+  // section must fail the job before that.
+  test("writes the release notes right after the tag check, before the tests and the stage", () => {
+    const notes = at("node scripts/changelog-section.mjs");
+    expect(at("node scripts/check-tag.mjs")).toBeLessThan(notes);
+    expect(notes).toBeLessThan(at("- run: npm test"));
+    expect(notes).toBeLessThan(at("- name: Stage on npm"));
+  });
+
+  test("the draft release reads the notes written before the stage", () => {
+    const file = /node scripts\/changelog-section\.mjs "[^"]+" > "([^"]+)"/.exec(workflow)?.[1];
+    expect(file).toBeDefined();
+    expect(at(`--notes-file "${file}"`)).toBeGreaterThan(at("- name: Draft GitHub release"));
+    expect(workflow.split("changelog-section.mjs")).toHaveLength(2);
+  });
+});

@@ -39,6 +39,10 @@ jobs:
       - run: npm ci
       - name: The tag names the version in package.json and src/version.ts
         run: node scripts/check-tag.mjs "$GITHUB_REF_NAME"
+      # Before anything is staged: a version without its CHANGELOG section
+      # fails here, while a rerun is still safe. The draft release reads it.
+      - name: Release notes from CHANGELOG.md
+        run: node scripts/changelog-section.mjs "${GITHUB_REF_NAME#v}" > "$RUNNER_TEMP/release-notes.md"
       - name: The production public keys are pinned (no placeholder, no test key)
         run: npm run check:keys
       - run: npm run typecheck
@@ -72,8 +76,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TARBALL: ${{ steps.pack.outputs.tarball }}
         run: |
-          node scripts/changelog-section.mjs "${GITHUB_REF_NAME#v}" > release-notes.md
           if ! gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
             gh release create "$GITHUB_REF_NAME" "$TARBALL" --draft --verify-tag \
-              --title "$GITHUB_REF_NAME" --notes-file release-notes.md
+              --title "$GITHUB_REF_NAME" --notes-file "$RUNNER_TEMP/release-notes.md"
           fi

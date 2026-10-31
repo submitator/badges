@@ -138,9 +138,11 @@ no npm token anywhere: npm trusts that workflow through OIDC, and only to stage.
    a part, and dots in the prerelease (`rc.1`, never `rc-1`). The release refuses any other.
 3. `git push origin main && git push origin vX.Y.Z`
 4. GitHub Actions, workflow **Release**: it checks the tag against `package.json`,
-   `src/version.ts` and the server's version grammar, the pinned keys, the types, the tests, the
-   package lint, the tarball and the smoke test, then runs `npm stage publish` on that tarball
-   and opens a draft GitHub release.
+   `src/version.ts` and the server's version grammar, and takes the release notes from
+   `CHANGELOG.md` (a missing `## X.Y.Z` section stops it there, before anything is staged). Then
+   it checks the pinned keys, the types, the tests, the package lint, the tarball and the smoke
+   test, runs `npm stage publish` on that tarball and opens a draft GitHub release with those
+   notes.
 5. Approve on npmjs.com (Staged Packages, Approve, 2FA) or with `npm stage approve <stage-id>`.
 6. Check `npm view @submitator/badges version dist-tags` and the Provenance badge, then publish
    the draft GitHub release.
