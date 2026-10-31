@@ -36,6 +36,7 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run format:check
+      # Before any build, on purpose: the tests read src/, never dist/, as on a fresh clone.
       - run: npm test
       # Builds, then checks the declarations, publint and are-the-types-wrong.
       - run: npm run lint:package

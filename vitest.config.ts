@@ -1,7 +1,7 @@
 import { fileURLToPath } from "node:url";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import { defineConfig } from "vitest/config";
-import { distToSource } from "./test/support/aliases.js";
+import { distToSource, noSveltePrebundle } from "./test/support/aliases.js";
 
 /** React 18.3 lives in an npm workspace (test/floors/react18); see its package.json. */
 const react18 = (path: string) =>
@@ -70,7 +70,7 @@ export default defineConfig({
         },
       },
       {
-        plugins: [svelte({ configFile: false })],
+        plugins: [noSveltePrebundle(), svelte({ configFile: false })],
         resolve: { alias: [distToSource] },
         test: {
           name: "svelte",
@@ -79,7 +79,7 @@ export default defineConfig({
         },
       },
       {
-        plugins: [svelte({ configFile: false })],
+        plugins: [noSveltePrebundle(), svelte({ configFile: false })],
         resolve: { alias: [distToSource], conditions: ["browser"] },
         test: {
           name: "svelte-dom",
