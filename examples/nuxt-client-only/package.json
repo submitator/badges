@@ -1,0 +1,16 @@
+{
+  "name": "example-nuxt-client-only",
+  "version": "0.0.0",
+  "private": true,
+  "description": "What not to do: the wall fetched on the server but rendered inside ClientOnly. The self-check must find 0.",
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "start": "node .output/server/index.mjs"
+  },
+  "dependencies": {
+    "@submitator/badges": "file:../.pack/submitator-badges.tgz",
+    "nuxt": "4.6.3",
+    "vue": "3.5.44"
+  }
+}
