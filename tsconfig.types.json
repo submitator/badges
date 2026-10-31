@@ -5,7 +5,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "skipLibCheck": false,
-    "types": []
+    "types": [],
+    "jsx": "react-jsx"
   },
   "include": ["test/types"],
   "exclude": []
