@@ -14,3 +14,6 @@ export const DEFAULT_API_URL = "https://api.submitator.com";
 
 /** The prefix of every line the package logs. */
 export const LOG_PREFIX: string = `[${PACKAGE_NAME}]`;
+
+/** A request Next.js caches like any other, so a page served from memory keeps a lifetime. */
+export const LIFETIME_MARK_URL = "data:text/plain,submitator-wall";

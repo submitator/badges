@@ -138,7 +138,7 @@ function daysInMonth(year: number, month: number): number {
 }
 
 /** A contract timestamp in microseconds since the epoch, or null when malformed. */
-function timestampMicros(value: string): bigint | null {
+export function timestampMicros(value: string): bigint | null {
   const match = TIMESTAMP_PATTERN.exec(value);
   if (!match) return null;
   const [year, month, day, hour, minute, second] = match.slice(1, 7).map(Number);

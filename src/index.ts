@@ -1,4 +1,5 @@
 export { DEFAULT_API_URL } from "./brand.js";
+export { fetchWall } from "./client.js";
 export { DEFAULTS, LIMITS, WALL_VERSION } from "./contract.js";
 export type { Defaults, Limits } from "./contract.js";
 export { PUBLIC_KEYS } from "./keys.js";
