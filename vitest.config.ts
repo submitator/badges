@@ -27,7 +27,7 @@ export default defineConfig({
       {
         test: {
           name: "react",
-          include: ["test/render/react.test.ts"],
+          include: ["test/render/react.test.ts", "test/render/react.dom.test.ts"],
           environment: "node",
           provide: { reactMajor: 19 },
         },
@@ -37,11 +37,12 @@ export default defineConfig({
           alias: [
             { find: /^react$/, replacement: react18("react/index.js") },
             { find: /^react-dom\/server$/, replacement: react18("react-dom/server.node.js") },
+            { find: /^react-dom\/client$/, replacement: react18("react-dom/client.js") },
           ],
         },
         test: {
           name: "react18",
-          include: ["test/render/react.test.ts"],
+          include: ["test/render/react.test.ts", "test/render/react.dom.test.ts"],
           environment: "node",
           provide: { reactMajor: 18 },
         },
