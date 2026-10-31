@@ -1,0 +1,65 @@
+{
+  "project": "00000000-0000-4000-8000-000000000001",
+  "directoryHosts": [
+    "turbo0.com",
+    "easydofollow.dev",
+    "amaze.directory",
+    "badge-dir.example.com"
+  ],
+  "customHosts": [
+    "producthunt.com",
+    "g2.com"
+  ],
+  "pages": {
+    "astro-ssr": {
+      "file": "astro-ssr.html",
+      "framework": "astro",
+      "badge": "found"
+    },
+    "astro-static": {
+      "file": "astro-static.html",
+      "framework": "astro",
+      "badge": "found"
+    },
+    "next-app": {
+      "file": "next-app.html",
+      "framework": "next",
+      "badge": "found"
+    },
+    "next-cache-components": {
+      "file": "next-cache-components.html",
+      "framework": "next",
+      "badge": "found"
+    },
+    "next-client-only": {
+      "file": "next-client-only.html",
+      "framework": "next",
+      "badge": "missing"
+    },
+    "next-pages": {
+      "file": "next-pages.html",
+      "framework": "next",
+      "badge": "found"
+    },
+    "node-http": {
+      "file": "node-http.html",
+      "framework": "node",
+      "badge": "found"
+    },
+    "nuxt": {
+      "file": "nuxt.html",
+      "framework": "nuxt",
+      "badge": "found"
+    },
+    "nuxt-client-only": {
+      "file": "nuxt-client-only.html",
+      "framework": "nuxt",
+      "badge": "missing"
+    },
+    "sveltekit": {
+      "file": "sveltekit.html",
+      "framework": "sveltekit",
+      "badge": "found"
+    }
+  }
+}

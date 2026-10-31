@@ -63,3 +63,29 @@ package writes them (`npx vitest run -u test/unit/html.test.ts`) and checks
 them on every run. The server's `BadgeMarker`, `BadgeChecker` and
 `DirectoryBadgeChecker` must find the self badge and every directory host
 outside `span.sbm-cb` in them.
+
+## pages/*.html
+
+The homepage of every example app in `examples/`, byte for byte as its server
+sent it: real framework output (Next.js App Router, Cache Components and Pages
+Router, Nuxt, SvelteKit, Astro on demand and static, plain Node.js), scripts
+and hydration data included, which is what the server's checks meet on
+customer sites. `node examples/run-example.mjs <app> --save-page` writes one;
+CI builds all of them on every run and uploads them as the `contract-v1-pages`
+artifact.
+
+Every app renders the good wall of the mock wall server
+(`examples/mock-wall-server/`). `pages/manifest.json` says what to expect:
+
+- `project`: the project id (synthetic) of every page;
+- `directoryHosts`: the hosts of the directory badges. `DirectoryBadgeChecker`
+  must find each of them outside `span.sbm-cb`;
+- `customHosts`: the hosts of the custom badges, which sit only inside
+  `span.sbm-cb`;
+- `pages.<app>.badge`: `found` when the server HTML holds the wall
+  (`BadgeMarker` and `BadgeChecker` find the self badge, the self-check of
+  CONTRACT.md section 10 counts 1 or more), `missing` for the two client-only
+  apps (the wall only travels in the page data, with `?ref=<project>`, so
+  `BadgeChecker` must report the badge missing and the self-check counts 0).
+
+The root's `data-sbm-wall` holds the package version the page was built with.
