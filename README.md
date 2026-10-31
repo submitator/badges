@@ -349,8 +349,8 @@ node examples/run-example.mjs next-app
 ```
 
 `examples/` holds real apps for every framework, built and checked in CI against a mock wall
-server; [examples/README.md](examples/README.md) says what each one checks.
-[RELEASING.md](RELEASING.md) is the release runbook.
+server; [examples/README.md](https://github.com/submitator/badges/blob/main/examples/README.md) says what each one checks.
+[RELEASING.md](https://github.com/submitator/badges/blob/main/RELEASING.md) is the release runbook.
 
 ## License
 

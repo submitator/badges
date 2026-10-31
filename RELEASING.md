@@ -45,7 +45,9 @@ the public key.
 ## 2. First release: 1.0.0 from your laptop
 
 The repo is private, so this one goes out like `submitator-mcp`, from your machine, and has no
-provenance.
+provenance. While it stays private, the README's links to repo files open GitHub from the npm
+page and show visitors a 404; they work once the repo is public. CONTRACT.md and SECURITY.md
+also ship in the package, so the npm page's Code tab and `node_modules` have them.
 
 1. In `~/real_work/submitator-badges`, on an up-to-date `main` with a clean tree:
 

@@ -1,7 +1,12 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
-import { packedPaths, packProblems, REQUIRED } from "../../scripts/check-pack.mjs";
+import {
+  packedPaths,
+  packProblems,
+  readmeLinkProblems,
+  REQUIRED,
+} from "../../scripts/check-pack.mjs";
 import { VERSION } from "../../src/version.js";
 
 const root = new URL("../../", import.meta.url);
@@ -71,8 +76,20 @@ describe("repo hygiene", () => {
     expect(VERSION).toBe(version);
   });
 
-  test("npm pack ships only dist, svelte, astro, README, LICENSE, CHANGELOG and package.json", () => {
+  test("npm pack ships only dist, svelte, astro, package.json and the docs", () => {
     expect(packProblems(packedPaths(), { requireBuild: false })).toEqual([]);
+  });
+
+  // In node_modules a relative link works only if the file ships; on npmjs.com it opens GitHub.
+  test("every relative link of README.md points at a shipped file", () => {
+    expect(readmeLinkProblems(packedPaths())).toEqual([]);
+  });
+
+  test("the link check reports a relative link to a file that does not ship", () => {
+    const readme = "[a](CONTRACT.md) [b](docs/x.md#part) [c](https://x.example/y.md) [d](#top)";
+    expect(readmeLinkProblems(["README.md", "CONTRACT.md"], readme)).toEqual([
+      "README.md links to docs/x.md, which is not shipped",
+    ]);
   });
 
   test("the pack check refuses other paths, server segments and test keys", () => {

@@ -3,7 +3,9 @@
 // - no path with a `server` segment (SvelteKit treats those as server-only);
 // - no test key in shipped code;
 // - every relative import of the shipped Svelte and Astro sources resolves to
-//   a shipped file (they import the core as ../dist/index.js).
+//   a shipped file (they import the core as ../dist/index.js);
+// - every relative link of README.md points at a shipped file, so it works in
+//   node_modules (on npmjs.com such links open the GitHub repo instead).
 // Run it after `npm run build`.
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
@@ -34,14 +36,31 @@ export function exportTargets(exportsField) {
 }
 
 const manifest = JSON.parse(readFileSync(new URL("package.json", root), "utf8"));
-const ALLOWED_FILES = new Set(["package.json", "README.md", "LICENSE", "CHANGELOG.md"]);
+/** Documents that ship: the README links to all of them. */
+const DOCS = ["README.md", "LICENSE", "CHANGELOG.md", "CONTRACT.md", "SECURITY.md"];
+const ALLOWED_FILES = new Set(["package.json", ...DOCS]);
 const ALLOWED_DIRS = ["dist/", "svelte/", "astro/"];
 export const REQUIRED = [
   "package.json",
-  "LICENSE",
-  "CHANGELOG.md",
+  ...DOCS.filter((path) => path !== "README.md"),
   ...exportTargets(manifest.exports).filter((path) => path !== "package.json"),
 ];
+const MARKDOWN_LINK = /\]\(([^)\s]+)\)/g;
+
+/** The links of a Markdown text that point at a file next to it (no scheme, no #anchor). */
+export function relativeLinks(markdown) {
+  return [...markdown.matchAll(MARKDOWN_LINK)]
+    .map((match) => match[1].replace(/#.*$/, ""))
+    .filter((target) => target !== "" && !/^[a-z][a-z0-9+.-]*:/i.test(target));
+}
+
+/** README links to files the tarball does not hold. */
+export function readmeLinkProblems(paths, readme = readShipped("README.md")) {
+  const shipped = new Set(paths);
+  return relativeLinks(readme)
+    .filter((target) => !shipped.has(posix.normalize(target)))
+    .map((target) => `README.md links to ${target}, which is not shipped`);
+}
 const SERVER_SEGMENT = /(?:^|\/)server(?:[./]|$)/;
 // RFC 8032 TEST 1, the public test key and its seed: never in shipped code.
 const TEST_KEY_PARTS = [
@@ -93,7 +112,8 @@ function readShipped(path) {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  const problems = packProblems(packedPaths());
+  const paths = packedPaths();
+  const problems = [...packProblems(paths), ...readmeLinkProblems(paths)];
   if (problems.length > 0) {
     for (const problem of problems) console.error(problem);
     process.exit(1);

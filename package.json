@@ -72,7 +72,9 @@
     "dist",
     "svelte",
     "astro",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "CONTRACT.md",
+    "SECURITY.md"
   ],
   "engines": {
     "node": ">=20.9"
