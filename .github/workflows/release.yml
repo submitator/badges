@@ -1,0 +1,79 @@
+# Stages a release on npm when a version tag (v1.2.3) is pushed. Nothing goes
+# live from here: the version waits in npm's staging area until the owner
+# approves it with 2FA (RELEASING.md). There is no npm token anywhere: npm
+# trusts this workflow through OIDC (a trusted publisher allowed to stage only).
+#
+# Actions are pinned by commit SHA (the comment names the release the SHA was
+# taken from, checked on 2026-10-31).
+name: Release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions: {}
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  stage:
+    name: Stage ${{ github.ref_name }} on npm
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: npm
+    permissions:
+      contents: write # the draft GitHub release
+      id-token: write # npm trusted publishing (OIDC) and provenance
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      # npm stage publish needs npm 11.15.0 or later.
+      - run: npm install --global npm@^11.15.0
+      - run: npm ci
+      - name: The tag names the version in package.json and src/version.ts
+        run: node scripts/check-tag.mjs "$GITHUB_REF_NAME"
+      - name: The production public keys are pinned (no placeholder, no test key)
+        run: npm run check:keys
+      - run: npm run typecheck
+      - run: npm test
+      # Builds, then checks the declarations, publint and are-the-types-wrong.
+      - run: npm run lint:package
+      - name: Pack
+        id: pack
+        run: |
+          npm pack
+          npm run pack:check
+          echo "tarball=submitator-badges-${GITHUB_REF_NAME#v}.tgz" >> "$GITHUB_OUTPUT"
+      - run: npm run test:smoke
+      # The version is staged, not published. The owner approves it on
+      # npmjs.com (the package, Staged Packages tab, Approve, then 2FA) or with
+      # npm stage list and npm stage approve <stage-id>. Until then nobody can
+      # install it.
+      - name: Stage on npm
+        env:
+          TARBALL: ${{ steps.pack.outputs.tarball }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          if npm view "@submitator/badges@$version" version > /dev/null 2>&1; then
+            echo "::notice::@submitator/badges@$version is already on npm: nothing to stage."
+            exit 0
+          fi
+          npm stage publish "./$TARBALL" --access public --tag "$(node scripts/dist-tag.mjs)"
+      # A draft: the owner publishes it after approving the npm version.
+      - name: Draft GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARBALL: ${{ steps.pack.outputs.tarball }}
+        run: |
+          node scripts/changelog-section.mjs "${GITHUB_REF_NAME#v}" > release-notes.md
+          if ! gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            gh release create "$GITHUB_REF_NAME" "$TARBALL" --draft --verify-tag \
+              --title "$GITHUB_REF_NAME" --notes-file release-notes.md
+          fi
