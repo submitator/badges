@@ -1,0 +1,22 @@
+{
+  "name": "example-next-cache-components",
+  "version": "0.0.0",
+  "private": true,
+  "description": "@submitator/badges in Next.js 16 with cacheComponents: the wall inside \"use cache\", and inside Suspense.",
+  "scripts": {
+    "build": "next build",
+    "start": "next start -H 127.0.0.1"
+  },
+  "dependencies": {
+    "@submitator/badges": "file:../.pack/submitator-badges.tgz",
+    "next": "16.4.3",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "typescript": "5.9.3"
+  }
+}
