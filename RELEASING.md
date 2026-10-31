@@ -91,8 +91,8 @@ no npm token anywhere: npm trusts that workflow through OIDC, and only to stage.
    npm trust github @submitator/badges --repo submitator/badges --file release.yml --env npm --allow-stage-publish
    ```
 
-2. Tag the next release within 2 days: npm drops a trusted publisher that has not been used by
-   then. If that happens, delete it and add it again.
+2. Do step 1 right before a release, and push its tag within 2 days: npm drops a trusted
+   publisher that has not been used by then. If that happens, delete it and add it again.
 3. After the first release through CI, check the package page on npmjs.com for the
    **Provenance** badge. npm does not say outright that staged versions keep it: if it is
    missing, the landing page must not claim provenance.
