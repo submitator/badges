@@ -1,0 +1,8 @@
+# Frozen or byte-exact files: never reformat them.
+CONTRACT.md
+test/fixtures/
+# Build output and shipped component sources (template whitespace is visible).
+dist/
+svelte/
+astro/
+package-lock.json
