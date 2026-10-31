@@ -10,7 +10,9 @@ import { pathToFileURL } from "node:url";
 import { ENVELOPE_CASES, NOW, PROJECT, TEST_KEY, WALL_CASES } from "./fixture-cases.mjs";
 
 export const FIXTURES = new URL("../test/fixtures/contract-v1/", import.meta.url);
-const DEL_ESCAPE = String.fromCharCode(92) + "u007f";
+const BACKSLASH = String.fromCharCode(92);
+/** DEL, and every space other than the pretty printer's: no-break, ideographic and the rest. */
+const HIDDEN = /\x7f|[^\S \n]/g;
 
 /** Signs a payload's UTF-8 bytes with the test key; base64url without padding. */
 export function signWithTestKey(payload) {
@@ -21,9 +23,16 @@ export function signWithTestKey(payload) {
   return sign(null, Buffer.from(payload, "utf8"), key).toString("base64url");
 }
 
-/** Pretty JSON with a final newline; DEL is escaped so no file holds a raw control character. */
+/**
+ * Pretty JSON with a final newline. DEL and Unicode spaces are escaped, so no
+ * file holds a raw control character or a space nobody can see.
+ */
 function toJson(value) {
-  return `${JSON.stringify(value, null, 2).replaceAll(String.fromCharCode(0x7f), DEL_ESCAPE)}\n`;
+  const text = JSON.stringify(value, null, 2).replace(
+    HIDDEN,
+    (character) => `${BACKSLASH}u${character.charCodeAt(0).toString(16).padStart(4, "0")}`,
+  );
+  return `${text}\n`;
 }
 
 /** Every hand-written fixture as { path, text }, path relative to FIXTURES. */

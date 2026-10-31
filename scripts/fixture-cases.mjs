@@ -636,6 +636,9 @@ export const SKIP_CASES = [
   ["a protocol-relative href", "url", [goodLink("//evil.example/p")]],
   ["a space before the scheme", "url", [goodLink(" https://x.example")]],
   ["a space after the scheme", "url", [goodLink("https:// x.example")]],
+  // \s is JavaScript's here: Unicode spaces count too (Ruby's \s is ASCII only).
+  ["a no-break space after the scheme", "url", [goodLink("https://\u{a0}x.example")]],
+  ["an ideographic space after the scheme", "url", [goodLink("https://\u{3000}x.example")]],
   ["a scheme with nothing after it", "url", [goodLink("https://")]],
   ["a tab inside an href", "url", [goodLink("https://x.example/a\tb")]],
   ["href on a span", "attribute", [{ t: "span", a: { href: "https://x.example" }, c: ["x"] }]],
@@ -676,6 +679,16 @@ export const SKIP_CASES = [
   ["EXPRESSION( in capitals", "style", styled([["width", "EXPRESSION(alert(1))"]])],
   ["@IMPORT in capitals", "style", styled([["font-family", "@IMPORT 'x'"]])],
   ["Image-Set( in mixed case", "style", styled([["background", "Image-Set('a.png' 1x)"]])],
+  [
+    "url( after a no-break space",
+    "style",
+    styled([["background", "url\u{a0}(https://x.example/a.png)"]]),
+  ],
+  [
+    "image-set( after an ideographic space",
+    "style",
+    styled([["background", "image-set\u{3000}('a.png' 1x)"]]),
+  ],
   ["a comment in a style value", "style", styled([["position", "/**/fixed"]])],
   ["the behavior property", "style", styled([["behavior", "x"]])],
   ["the -moz-binding property", "style", styled([["-moz-binding", "none"]])],

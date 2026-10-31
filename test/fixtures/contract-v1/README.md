@@ -40,6 +40,14 @@ Package details the server can rely on:
 - The node limit counts text nodes and elements alike.
 - Lengths count characters (code points), not UTF-16 units or bytes.
 - Spaces around a style value are dropped, not refused.
+- `\s` in the contract's patterns (`^https?://[^\s]`, `url\s*\(` and the
+  other style tokens) is JavaScript's: besides ASCII whitespace it matches
+  U+00A0, U+1680, U+2000 to U+200A, U+2028, U+2029, U+202F, U+205F, U+3000
+  and U+FEFF. Ruby's `\s` is ASCII only, so a server check written with it
+  lets through badges the package skips. `hand-skips.json` has a no-break
+  and an ideographic space after the scheme and before `(`.
+- Fixture files escape DEL and every Unicode space (`\u00a0`); the decoded
+  strings hold the raw characters.
 
 ## envelopes/*.json
 
