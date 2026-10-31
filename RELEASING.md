@@ -11,9 +11,11 @@ Done on 2026-10-31:
   sign-in and writes. There is no npm organization.
 - GitHub: the repo `submitator/badges`, private for now, with the environment `npm` (deployment
   tags `v*`).
+- The production keys (section 1): the primary's seed and id in Koyeb, the backup's seed in your
+  password manager, both public keys pinned in `src/keys.ts`, `SECURITY.md` and the backend.
 
-Still to do, in this order: the production keys (section 1), the first release from your laptop
-(section 2), and trusted publishing once the repo is public (section 3).
+Still to do, in this order: the first release from your laptop (section 2), and trusted
+publishing once the repo is public (section 3).
 
 You need npm 11.15.0 or later and Node.js 22.14 or later for `npm stage` (`npm -v`; to update:
 `npm install --global npm@latest`).

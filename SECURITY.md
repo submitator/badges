@@ -16,13 +16,13 @@ in `src/keys.ts`. Public keys are base64url without padding of the raw 32-byte k
 
 | keyId            | Role                                                           | Public key                                    |
 | ---------------- | -------------------------------------------------------------- | --------------------------------------------- |
-| `k202611-a`      | Production primary: signs every wall                           | listed here before 1.0.0 is published         |
-| `k202611-b`      | Production backup: kept offline, used if the primary leaks     | listed here before 1.0.0 is published         |
+| `k202611-a`      | Production primary: signs every wall                           | `cZ9kHN37kpohJeeYqIoUBOBY2Km05ZAjVclHOuptGbk` |
+| `k202611-b`      | Production backup: kept offline, used if the primary leaks     | `0MkT61zlC2Pkcs3W0VV3lXD7AV8hzTicQnlUgkYt5o8` |
 | `test-rfc8032-1` | Tests and local development only, never accepted in production | `11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo` |
 
-The production keys are generated once by the owner (RELEASING.md). Until both public keys are
-pinned, `src/keys.ts` holds placeholders that verify nothing, and the release check
-(`npm run check:keys`) fails.
+The owner generated the production keys once, on 2026-10-31 (RELEASING.md). The release check
+(`npm run check:keys`) fails if `src/keys.ts` ever pins a placeholder, a malformed key or the
+test key.
 
 `test-rfc8032-1` is the key of RFC 8032 section 7.1, TEST 1: public on purpose, so anyone can
 check the test vector (`test/fixtures/contract-v1/vector.json`). The package accepts a key it
