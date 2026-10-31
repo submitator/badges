@@ -25,7 +25,9 @@ describeWallRendering({
 
 describe("attribute escaping", () => {
   // Astro 4 and 5 write a plain string that is an http(s) URL holding "&"
-  // without escaping it. Node.astro hands Astro String objects instead.
+  // without escaping it. Node.astro hands Astro String objects instead. This
+  // Astro (7) escapes either way, so the first test below cannot fail here:
+  // examples/astro4-floor and astro5-floor run the same URL on 4 and 5 in CI.
   const HOSTILE = 'https://x.example/?a=1&b=" onmouseover="alert(1)';
 
   function hostileWall(): Wall {
