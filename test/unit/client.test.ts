@@ -543,6 +543,15 @@ describe("failures", () => {
       "[@submitator/badges] 2 badges were left out because they failed the checks (tag, kind): the others are shown",
     ]);
   });
+
+  test("says one skipped badge in the singular", async () => {
+    const t = setup();
+    t.replyWith(() => ok(envelopeFor({ badges: [selfLink(), { kind: "spam", tree: [] }] })));
+    expect((await t.call())?.skipped).toBe(1);
+    expect(t.logs).toEqual([
+      "[@submitator/badges] 1 badge was left out because it failed the checks (kind): the others are shown",
+    ]);
+  });
 });
 
 describe("options", () => {

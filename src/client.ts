@@ -253,8 +253,11 @@ const HINTS: Record<string, string> = {
 
 function skippedSummary(skips: readonly Skip[]): string {
   const reasons = [...new Set(skips.map((skip) => skip.reason))].join(", ");
-  const count = skips.length === 1 ? "1 badge was" : `${skips.length} badges were`;
-  return `${count} left out because they failed the checks (${reasons}): the others are shown`;
+  const count =
+    skips.length === 1
+      ? "1 badge was left out because it"
+      : `${skips.length} badges were left out because they`;
+  return `${count} failed the checks (${reasons}): the others are shown`;
 }
 
 /**
