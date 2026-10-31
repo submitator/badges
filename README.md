@@ -301,6 +301,10 @@ and 19, Vue 3.4 and 3.5 and Svelte 5. The peer ranges: `react` 18.3 or later, `v
 
 - **The check finds 0, but the badges show in your browser.** They are rendered in the browser
   only. Render them on the server, as in the snippets above.
+- **The check finds 0, but the page source shows `data-sbm-ref='...'` in single quotes.** An HTML
+  minifier rewrote the quotes of attributes, and the check counts the marker only with double
+  quotes or none. The badges are fine; set the minifier to keep double quotes, and the check
+  counts them again.
 - **Next.js with `cacheComponents` stops the build** with "Next.js encountered uncached or runtime
   data during prerendering" (`blocking-prerender-dynamic`). Put `SubmitatorBadges` inside a
   `"use cache"` component, as in the snippet, or inside `<Suspense>`.
