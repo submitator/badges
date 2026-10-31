@@ -48,8 +48,8 @@ export default function Home() {
 }
 ```
 
-`SubmitatorBadges` is an async Server Component. A page that shows it is revalidated at least
-every 60 seconds, also when the wall came from the package's memory.
+`SubmitatorBadges` is an async Server Component. Next.js gives a page that shows it a lifetime of
+60 seconds at most (the `revalidate` option), also when the wall came from the package's memory.
 
 ## Next.js 16 with cacheComponents
 
@@ -268,7 +268,10 @@ exports only.
   `User-Agent: submitator-badges/<version> (<framework>[; dev]; +https://submitator.com/badge-package)`.
 - So it tells us your project ID, the package version and your framework's name. `dev` marks a
   development server, which we never count as an install.
-- No cookies, no body, no query string, no other header. No telemetry.
+- No cookies, no body, no query string. The package sets no other header (your runtime adds its
+  usual ones, such as `Accept-Encoding`). No telemetry.
+- Under Next.js it also makes a `data:` request, which Next.js caches and which never leaves your
+  server: it gives the page its lifetime (see Freshness and caches).
 - It reads no secrets and no configuration: it only checks `NODE_ENV` and `NEXT_RUNTIME`, to label
   its request.
 - We keep the time of the last request, the package version and the framework's name, to show
@@ -302,6 +305,9 @@ and 19, Vue 3.4 and 3.5 and Svelte 5. The peer ranges: `react` 18.3 or later, `v
   data during prerendering" (`blocking-prerender-dynamic`). Put `SubmitatorBadges` inside a
   `"use cache"` component, as in the snippet, or inside `<Suspense>`.
 - **The badges never change** on a prerendered or static page: see Static builds above.
+- **Astro fails with `Unknown file extension ".astro"`** when the page renders. Astro compiles
+  the components of the packages listed in your app's own `package.json`: add
+  `@submitator/badges` to its `dependencies` (`npm i` does that), also in a monorepo.
 - **The log says the wall is signed with a key this package does not know.** Update
   `@submitator/badges`: we rotated a key. With a local backend, pass its `publicKeys`.
 - **The log says this runtime cannot check Ed25519 signatures.** Render the badges in Node.js 20.9
