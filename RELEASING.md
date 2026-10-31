@@ -61,9 +61,13 @@ also ship in the package, so the npm page's Code tab and `node_modules` have the
    `## Unreleased` above it, and commit.
 3. `npm version 1.0.0`: writes the version to `package.json` and `src/version.ts`, commits and
    tags `v1.0.0`.
-4. `npm stage publish --access public`. It builds the package and prints
-   `+ @submitator/badges@1.0.0 (staged with id <stage-id>)`. Because the package is new, npm also
-   publishes a placeholder version `0.0.0-stage`, which is public; 1.0.0 is not, yet.
+4. `npm stage publish --access public`. It first runs the package's `prepublishOnly` guard,
+   which stops it while `src/keys.ts` pins a placeholder or the test key (`check-keys.mjs`), or
+   while the version is one our server cannot read (`check-version.mjs`, CONTRACT.md section 9:
+   at most 4 digits a part, and a prerelease like `rc.1`, never `rc-1`). Then it builds the
+   package and prints `+ @submitator/badges@1.0.0 (staged with id <stage-id>)`. Because the
+   package is new, npm also publishes a placeholder version `0.0.0-stage`, which is public; 1.0.0
+   is not, yet.
 5. Approve: npmjs.com, the package, the **Staged Packages** tab, **Approve**, then your 2FA code.
    Or in the terminal: `npm stage list @submitator/badges`, then
    `npm stage approve <stage-id>`. To look first: `npm stage view <stage-id>` and

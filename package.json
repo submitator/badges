@@ -107,6 +107,7 @@
   ],
   "scripts": {
     "build": "node scripts/write-version.mjs --check && tsc -p tsconfig.build.json",
+    "prepublishOnly": "node scripts/check-keys.mjs && node scripts/check-version.mjs",
     "prepack": "npm run build",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",

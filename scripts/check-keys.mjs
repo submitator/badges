@@ -1,5 +1,6 @@
 // Fails while src/keys.ts pins a placeholder, a malformed key or the test key
-// instead of the production public keys. release.yml runs it before publishing.
+// instead of the production public keys. release.yml runs it before publishing,
+// and so do npm publish and npm stage publish from a checkout (prepublishOnly).
 import { readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 

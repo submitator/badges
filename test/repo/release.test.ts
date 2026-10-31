@@ -2,10 +2,50 @@ import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 import { changelogSection } from "../../scripts/changelog-section.mjs";
 import { sourceVersion, tagProblems } from "../../scripts/check-tag.mjs";
+import { SERVER_VERSION, versionProblems } from "../../scripts/check-version.mjs";
 import { distTag } from "../../scripts/dist-tag.mjs";
 
 const read = (path: string): string =>
   readFileSync(new URL(`../../${path}`, import.meta.url), "utf8");
+
+describe("release guards", () => {
+  // npm stage publish packs the folder like npm publish, which runs prepublishOnly first.
+  test("npm publish and npm stage publish check the keys and the version first", () => {
+    const { scripts } = JSON.parse(read("package.json")) as { scripts: Record<string, string> };
+    expect(scripts["prepublishOnly"]).toBe(
+      "node scripts/check-keys.mjs && node scripts/check-version.mjs",
+    );
+  });
+
+  test("check-version holds the version to the server's grammar (CONTRACT.md section 9)", () => {
+    expect(read("CONTRACT.md")).toContain(`(?<version>${SERVER_VERSION})`);
+  });
+
+  test.each(["0.0.0", "1.2.3", "1.2.0-rc.1", "9999.9999.9999", `1.0.0-${"a".repeat(20)}`])(
+    "check-version passes %s",
+    (version) => {
+      expect(versionProblems(version)).toEqual([]);
+    },
+  );
+
+  test.each([
+    "1.1.0-rc-1",
+    "10000.0.0",
+    "1.0.0+build.1",
+    `1.0.0-${"a".repeat(21)}`,
+    "1.2",
+    "v1.2.3",
+    "",
+    undefined,
+  ])("check-version refuses %s, which the server cannot read", (version) => {
+    expect(versionProblems(version)).not.toEqual([]);
+  });
+
+  test("package.json's version is one the server reads", () => {
+    const { version } = JSON.parse(read("package.json")) as { version: string };
+    expect(versionProblems(version)).toEqual([]);
+  });
+});
 
 describe("release scripts", () => {
   test("check-tag passes a tag that names the package and source version", () => {
