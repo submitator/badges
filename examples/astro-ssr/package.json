@@ -1,0 +1,16 @@
+{
+  "name": "example-astro-ssr",
+  "version": "0.0.0",
+  "private": true,
+  "description": "@submitator/badges in Astro with the Node adapter: the homepage renders on demand, so the badges stay live.",
+  "type": "module",
+  "scripts": {
+    "build": "astro build",
+    "start": "node ./dist/server/entry.mjs"
+  },
+  "dependencies": {
+    "@astrojs/node": "11.1.9",
+    "@submitator/badges": "file:../.pack/submitator-badges.tgz",
+    "astro": "7.4.4"
+  }
+}

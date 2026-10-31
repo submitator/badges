@@ -1,0 +1,21 @@
+{
+  "name": "example-sveltekit",
+  "version": "0.0.0",
+  "private": true,
+  "description": "@submitator/badges in SvelteKit: fetchWall in the layout's server load, BadgeWall in the layout.",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "start": "node build"
+  },
+  "dependencies": {
+    "@submitator/badges": "file:../.pack/submitator-badges.tgz"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-node": "6.0.1",
+    "@sveltejs/kit": "3.1.1",
+    "@sveltejs/vite-plugin-svelte": "7.3.1",
+    "svelte": "5.57.3",
+    "vite": "8.3.5"
+  }
+}

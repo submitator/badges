@@ -1,0 +1,20 @@
+---
+// Rendered on every request (needs a server adapter), so new badges show up
+// without a rebuild.
+import Footer from "../components/Footer.astro";
+
+export const prerender = false;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Astro on demand example</title>
+  </head>
+  <body>
+    <main>
+      <h1>Astro on demand example</h1>
+    </main>
+    <Footer />
+  </body>
+</html>

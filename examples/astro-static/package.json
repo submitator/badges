@@ -1,0 +1,15 @@
+{
+  "name": "example-astro-static",
+  "version": "0.0.0",
+  "private": true,
+  "description": "@submitator/badges in a static Astro site: the badges are fetched at build time and change when you rebuild.",
+  "type": "module",
+  "scripts": {
+    "build": "astro build",
+    "start": "node serve.mjs"
+  },
+  "dependencies": {
+    "@submitator/badges": "file:../.pack/submitator-badges.tgz",
+    "astro": "7.4.4"
+  }
+}
