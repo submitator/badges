@@ -565,6 +565,10 @@ describe("options", () => {
   test.each([
     ["no apiUrl", {}],
     ["the default apiUrl spelled with a slash", { apiUrl: "https://api.submitator.com/" }],
+    ["the default host with a trailing dot", { apiUrl: "https://api.submitator.com." }],
+    ["the default host in capitals", { apiUrl: "https://API.Submitator.com" }],
+    ["the default host with a path", { apiUrl: "https://api.submitator.com/v1" }],
+    ["the default host on another port", { apiUrl: "https://api.submitator.com:8443" }],
   ])("refuses publicKeys with %s", async (_label, options) => {
     const t = setup();
     expect(await t.client.fetchWall({ project: PROJECT, publicKeys: KEYS, ...options })).toBeNull();

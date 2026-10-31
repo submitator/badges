@@ -212,7 +212,7 @@ browser.
 | `revalidate`                                                    | `fetchWall`, `SubmitatorBadges` | `60`                         | Seconds between background refreshes of the wall in memory, 15 to 60.                                                    |
 | `timeout`                                                       | `fetchWall`, `SubmitatorBadges` | `2000`                       | Milliseconds a render waits for a wall, only while none is in memory, 100 to 10000.                                      |
 | `framework`                                                     | `fetchWall`, `SubmitatorBadges` | the adapter or the runtime   | Your framework's name in the request: `next`, `nuxt`, `sveltekit`, `astro`, `react`, `vue`, `svelte`, `node`, and so on. |
-| `publicKeys`                                                    | `fetchWall`, `SubmitatorBadges` | the pinned production keys   | `{ keyId: publicKey }` of a local or test backend. Refused while `apiUrl` is the default.                                |
+| `publicKeys`                                                    | `fetchWall`, `SubmitatorBadges` | the pinned production keys   | `{ keyId: publicKey }` of a local or test backend. Refused for `api.submitator.com`.                                     |
 | `log`                                                           | `fetchWall`, `SubmitatorBadges` | `console.warn`               | Where warnings go, one per problem until it clears. `false` silences them.                                               |
 | `wall`                                                          | `BadgeWall`, `wallToHtml`       | required                     | The wall from `fetchWall`. `null` or `undefined` renders nothing.                                                        |
 | `layout`                                                        | every renderer                  | `"marquee"`                  | `marquee` scrolls (from 3 badges up; fewer stand still), `row` stands still and wraps.                                   |
@@ -322,7 +322,7 @@ Every log line starts with `[@submitator/badges]`. `log: false` silences them.
   ever leaks, our server switches to the backup, and every version of the package accepts it
   without an update.
 - The test key `test-rfc8032-1` (RFC 8032 section 7.1, TEST 1) is public on purpose. The package
-  accepts it only through `publicKeys`, which it refuses while `apiUrl` is the default.
+  accepts it only through `publicKeys`, which it refuses for our production API.
 - A host without our key cannot forge a wall. A badge that fails the checks is left out. The
   wall's root uses `contain: paint`, so no badge can draw outside the strip.
 - [SECURITY.md](SECURITY.md) lists the keys and how to report a vulnerability:

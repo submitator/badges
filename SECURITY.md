@@ -26,8 +26,8 @@ pinned, `src/keys.ts` holds placeholders that verify nothing, and the release ch
 
 `test-rfc8032-1` is the key of RFC 8032 section 7.1, TEST 1: public on purpose, so anyone can
 check the test vector (`test/fixtures/contract-v1/vector.json`). The package accepts a key it
-does not pin only through the `publicKeys` option, and refuses that option while `apiUrl` is the
-default (`https://api.submitator.com`).
+does not pin only through the `publicKeys` option, and refuses that option for our production API:
+no `apiUrl`, or any `apiUrl` on `api.submitator.com` (with a path, a port or a trailing dot too).
 
 ## What the package trusts, and what it does not
 

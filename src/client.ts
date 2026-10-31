@@ -141,6 +141,16 @@ export function normalizeApiUrl(value: unknown): string | null {
   return url.origin + url.pathname.replace(/\/+$/, "");
 }
 
+const DEFAULT_API_HOST = new URL(DEFAULT_API_URL).hostname;
+
+/**
+ * True when a normalized apiUrl reaches our production API, however it is
+ * spelled: with a path, a port or a trailing dot. publicKeys is refused there.
+ */
+function isDefaultApiHost(base: string): boolean {
+  return new URL(base).hostname.replace(/\.+$/, "") === DEFAULT_API_HOST;
+}
+
 /** The User-Agent of CONTRACT.md section 1. */
 export function userAgent(framework: Framework, dev: boolean): string {
   return `${UA_PRODUCT}/${VERSION} (${framework}${dev ? "; dev" : ""}; +${DOCS_URL})`;
@@ -325,7 +335,7 @@ export function createClient(env: ClientEnv, slots: Map<string, Slot> = new Map(
     let keys: Readonly<Record<string, string>> = PUBLIC_KEYS;
     let keySet = "default";
     if (input.publicKeys !== undefined) {
-      if (base === DEFAULT_API_URL) {
+      if (isDefaultApiHost(base)) {
         once(
           sink,
           "publicKeys:default",
