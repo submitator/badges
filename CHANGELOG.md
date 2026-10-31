@@ -5,7 +5,9 @@ All notable changes to `@submitator/badges` are listed here. The package follows
 
 ## Unreleased
 
-The first release, 1.0.0.
+## 1.0.0 (2026-10-31)
+
+The first release.
 
 - `fetchWall` fetches your project's badge wall on your server, checks its Ed25519 signature
   against the two pinned production keys (`k202611-a`, `k202611-b`) and checks every badge
