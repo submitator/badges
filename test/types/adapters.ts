@@ -1,13 +1,15 @@
-// Compile-time checks of the hand-written declarations in svelte/ and astro/
-// against the built core: `npm run lint:package` runs them after the build
-// (tsconfig.types.json). A type the declarations name that dist/ no longer
-// exports turns into `any`, and the checks below fail.
+// Compile-time checks of the adapters' prop types as customers see them: the
+// hand-written declarations in svelte/ and astro/ and the emitted ones in
+// dist/, against the built core. `npm run lint:package` runs them after the
+// build (tsconfig.types.json, declaration files included).
 import type {
   BadgeWall as AstroBadgeWall,
   BadgeWallProps as AstroProps,
   SubmitatorBadges,
   SubmitatorBadgesProps,
 } from "../../astro/index.js";
+import type { BadgeWallProps as ReactProps } from "@submitator/badges/react";
+import type { BadgeWall as VueBadgeWall, BadgeWallProps as VueProps } from "@submitator/badges/vue";
 import type { FetchWallOptions, Layout, Wall } from "../../dist/index.js";
 import type {
   BadgeWall as SvelteBadgeWall,
@@ -31,4 +33,9 @@ export type Checks = [
   Expect<Equal<Parameters<typeof SubmitatorBadges>[0], SubmitatorBadgesProps>>,
   Expect<Equal<SubmitatorBadgesProps["project"], FetchWallOptions["project"]>>,
   Expect<SubmitatorBadgesProps extends FetchWallOptions ? true : false>,
+  Expect<Equal<VueProps["wall"], Wall | null | undefined>>,
+  Expect<Equal<VueProps["layout"], Layout | undefined>>,
+  Expect<typeof VueBadgeWall extends new (...args: never[]) => unknown ? true : false>,
+  Expect<Equal<ReactProps["wall"], Wall | null | undefined>>,
+  Expect<Equal<ReactProps["className"], string | undefined>>,
 ];

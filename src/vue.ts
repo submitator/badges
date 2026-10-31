@@ -14,7 +14,7 @@ import type { Layout, ViewNode, Wall } from "./types.js";
 /** Props of BadgeWall. Pass `class` like on any element. */
 export interface BadgeWallProps {
   /** The wall from fetchWall. null or undefined renders nothing. */
-  wall?: Wall | null | undefined;
+  wall: Wall | null | undefined;
   /** `marquee` (the default, from 3 badges up) or `row`. */
   layout?: Layout | undefined;
   /** CSP nonce for the one `<style>` element. */
