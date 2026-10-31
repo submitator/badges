@@ -73,6 +73,33 @@ provenance.
 9. Push: `git push origin main && git push origin v1.0.0`. The release workflow sees that 1.0.0
    is already on npm, skips the npm step and leaves a draft GitHub release.
 
+### Or, if the repo is public first: 1.0.0 through CI
+
+Instead of the steps above. npm sets up a trusted publisher only for a package that already
+exists, so a placeholder version goes first.
+
+1. In an empty folder, a `package.json`:
+
+   ```json
+   {
+     "name": "@submitator/badges",
+     "version": "0.0.0",
+     "description": "Reserved for the first release.",
+     "license": "MIT",
+     "repository": { "type": "git", "url": "git+https://github.com/submitator/badges.git" }
+   }
+   ```
+
+   then `npm publish --access public` with your 2FA code.
+
+2. The trusted publisher, allowed to stage only (section 3, step 1).
+3. Within 2 days: the CHANGELOG, `npm version 1.0.0`, and
+   `git push origin main && git push origin v1.0.0` (section 4, steps 1 to 3).
+4. Approve the staged 1.0.0 (Staged Packages, Approve, 2FA, or `npm stage approve <stage-id>`).
+   Check `npm view @submitator/badges version dist-tags` and the Provenance badge.
+5. `npm deprecate @submitator/badges@0.0.0 "Placeholder. Use 1.0.0 or later."`
+6. Settings, Publishing access: **Require two-factor authentication and disallow tokens**.
+
 ## 3. Trusted publishing, once the repo is public
 
 From then on releases go out through `.github/workflows/release.yml`, with provenance and with
