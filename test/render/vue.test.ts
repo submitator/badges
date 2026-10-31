@@ -41,18 +41,20 @@ describe("hydration", () => {
   async function hydrate(wall: Wall, options?: WallRenderOptions) {
     const container = document.createElement("div");
     container.innerHTML = await renderToString(app(wall, options));
+    const serverHtml = container.innerHTML;
     const serverNodes = [...container.querySelectorAll("*")];
     app(wall, options).mount(container);
-    return { container, serverNodes };
+    return { container, serverHtml, serverNodes };
   }
 
   test.each([...WALLS.keys()])(
-    "%s hydrates over the server HTML and keeps its nodes",
+    "%s hydrates over the server HTML, changing nothing",
     async (name) => {
-      const { container, serverNodes } = await hydrate(wallNamed(name), {
+      const { container, serverHtml, serverNodes } = await hydrate(wallNamed(name), {
         className: "x",
         nonce: "n",
       });
+      expect(container.innerHTML).toBe(serverHtml);
       const nodes = [...container.querySelectorAll("*")];
       expect(nodes.length).toBe(serverNodes.length);
       expect(nodes.every((node, index) => node === serverNodes[index])).toBe(true);

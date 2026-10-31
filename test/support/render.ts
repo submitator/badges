@@ -6,9 +6,10 @@ import { parseFragment } from "parse5";
 import type { DefaultTreeAdapterMap } from "parse5";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { MockInstance } from "vitest";
+import { ATTRIBUTES, SVG_NAMESPACE } from "../../src/contract.js";
 import { wallToHtml } from "../../src/html.js";
 import { parseWall } from "../../src/parse.js";
-import type { Layout, Wall, WallNode, WallRenderOptions } from "../../src/types.js";
+import type { Layout, Wall, WallNode, WallRenderOptions, WallTag } from "../../src/types.js";
 import { wallFixtures } from "./fixtures.js";
 
 type Node = DefaultTreeAdapterMap["childNode"];
@@ -32,6 +33,65 @@ export const WALLS: ReadonlyMap<string, Wall> = new Map(
 export function wallNamed(name: string): Wall {
   const wall = WALLS.get(name);
   if (wall === undefined) throw new Error(`no accepted fixture wall named ${name}`);
+  return wall;
+}
+
+/** Every attribute the contract allows on `tag` (CONTRACT.md section 6), with a value to escape. */
+function everyAttribute(tag: WallTag): Record<string, string> {
+  const result: Record<string, string> = {};
+  for (const name of ATTRIBUTES) {
+    if ((name === "href" && tag !== "a") || (name === "src" && tag !== "img")) continue;
+    if (name === "xmlns" && tag !== "svg") continue;
+    if (name === "href") result[name] = "https://every.example/p?a=1&b=2";
+    else if (name === "src") result[name] = "https://every.example/badge.svg?a=1&b=2";
+    else if (name === "xmlns") result[name] = SVG_NAMESPACE;
+    else result[name] = `${name} "v" & 'w'`;
+  }
+  return result;
+}
+
+/**
+ * A wall whose a, img, span, svg, path and circle carry every attribute the
+ * contract allows on them: an adapter that spells attributes out (Svelte's
+ * img) or maps their names (React) must miss none.
+ */
+export function everyAttributeWall(): Wall {
+  const project = "00000000-0000-4000-8000-0000000000aa";
+  const badge = {
+    kind: "directory",
+    id: "d_00000000-0000-4000-8000-0000000000bb",
+    name: "Every attribute",
+    host: "every.example",
+    tree: [
+      {
+        t: "a",
+        a: everyAttribute("a"),
+        s: [["color", "red"]],
+        c: [
+          { t: "img", a: everyAttribute("img"), s: [["width", "88px"]] },
+          { t: "span", a: everyAttribute("span"), s: [["--x", "1"]], c: ["text"] },
+          {
+            t: "svg",
+            a: everyAttribute("svg"),
+            c: [
+              { t: "path", a: everyAttribute("path") },
+              { t: "circle", a: everyAttribute("circle") },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+  const payload = JSON.stringify({
+    v: 1,
+    project,
+    issuedAt: "2026-11-01T00:00:00Z",
+    expiresAt: "2026-11-08T00:00:00Z",
+    badges: [badge],
+  });
+  const wall = parseWall(payload, { project, now: Date.parse("2026-11-02T00:00:00Z") });
+  if (wall === null || wall.badges.length !== 1)
+    throw new Error("the every-attribute wall is invalid");
   return wall;
 }
 
@@ -99,10 +159,16 @@ interface Shape {
 }
 
 /**
- * An element as plain data: comments dropped, neighbouring text merged,
- * attributes sorted, style as declarations (deduplicated when asked).
+ * How to compare inline styles: as written, with repeats reduced to the last
+ * (React), or not at all (a DOM rewrites what scripts put in style.cssText).
  */
-export function shape(element: Element, dedupeStyles = false): Shape {
+export type StyleMode = "exact" | "dedupe" | "ignore";
+
+/**
+ * An element as plain data: comments dropped, neighbouring text merged,
+ * attributes sorted, style as declarations (see StyleMode).
+ */
+export function shape(element: Element, styles: StyleMode = "exact"): Shape {
   const attrs = element.attrs
     .filter((entry) => entry.name !== "style")
     .map((entry): [string, string] => [entry.name, entry.value])
@@ -117,11 +183,11 @@ export function shape(element: Element, dedupeStyles = false): Shape {
       else children.push(text);
       continue;
     }
-    if (isElement(child)) children.push(shape(child, dedupeStyles));
+    if (isElement(child)) children.push(shape(child, styles));
   }
-  const style = declarations(attr(element, "style"));
+  const style = styles === "ignore" ? [] : declarations(attr(element, "style"));
   const result: Shape = { tag: element.tagName, attrs, children };
-  if (style.length > 0) result.style = dedupeStyles ? dedupe(style) : style;
+  if (style.length > 0) result.style = styles === "dedupe" ? dedupe(style) : style;
   return result;
 }
 
@@ -194,6 +260,7 @@ function inCustomWrapper(element: Element): boolean {
  */
 export function describeWallRendering(adapter: Adapter): void {
   const dedupeStyles = adapter.dedupesStyles === true;
+  const styles: StyleMode = dedupeStyles ? "dedupe" : "exact";
   const render = async (wall: Wall | null | undefined, options?: WallRenderOptions) =>
     adapter.render(wall, options);
   const retail = wallNamed("hand-retail");
@@ -230,7 +297,7 @@ export function describeWallRendering(adapter: Adapter): void {
         test(`${name}, ${layout}`, async () => {
           const html = await render(wall, { layout });
           const expected = wallRoot(wallToHtml(wall, { layout }));
-          expect(shape(wallRoot(html), dedupeStyles)).toEqual(shape(expected, dedupeStyles));
+          expect(shape(wallRoot(html), styles)).toEqual(shape(expected, styles));
         });
       }
     }
@@ -239,15 +306,19 @@ export function describeWallRendering(adapter: Adapter): void {
       const options = { className: "site-footer-badges", nonce: "r4nd0m" };
       const html = await render(three, options);
       const expected = wallRoot(wallToHtml(three, options));
-      expect(shape(wallRoot(html), dedupeStyles)).toEqual(shape(expected, dedupeStyles));
+      expect(shape(wallRoot(html), styles)).toEqual(shape(expected, styles));
+    });
+
+    test("with every attribute the contract allows, on every tag", async () => {
+      const wall = everyAttributeWall();
+      const html = await render(wall);
+      expect(shape(wallRoot(html), styles)).toEqual(shape(wallRoot(wallToHtml(wall)), styles));
     });
 
     test("for a wall that went through JSON (props, payloads, load data)", async () => {
       const copy = JSON.parse(JSON.stringify(retail)) as Wall;
       const html = await render(copy);
-      expect(shape(wallRoot(html), dedupeStyles)).toEqual(
-        shape(wallRoot(wallToHtml(retail)), dedupeStyles),
-      );
+      expect(shape(wallRoot(html), styles)).toEqual(shape(wallRoot(wallToHtml(retail)), styles));
     });
   });
 
