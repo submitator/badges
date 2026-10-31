@@ -44,6 +44,28 @@ export default defineConfig({
           provide: { reactMajor: 18 },
         },
       },
+      {
+        test: {
+          name: "vue",
+          include: ["test/render/vue.test.ts"],
+          environment: "happy-dom",
+          provide: { vueMinor: "3.5" },
+        },
+      },
+      {
+        resolve: {
+          alias: [
+            { find: /^vue$/, replacement: "vue34" },
+            { find: /^vue\/server-renderer$/, replacement: "vue34/server-renderer" },
+          ],
+        },
+        test: {
+          name: "vue34",
+          include: ["test/render/vue.test.ts"],
+          environment: "happy-dom",
+          provide: { vueMinor: "3.4" },
+        },
+      },
     ],
   },
 });

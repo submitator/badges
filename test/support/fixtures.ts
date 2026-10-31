@@ -1,7 +1,11 @@
 // Readers for the shared fixtures in test/fixtures/contract-v1/.
 import { readdirSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 
-export const FIXTURES = new URL("../fixtures/contract-v1/", import.meta.url);
+// From the repo root (vitest's root, the working directory) rather than
+// import.meta.url, which is not a file URL under a DOM test environment.
+export const FIXTURES = pathToFileURL(`${resolve("test/fixtures/contract-v1")}/`);
 
 export interface Vector {
   keyId: string;
