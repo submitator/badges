@@ -1,0 +1,16 @@
+{
+  "name": "server-left-out",
+  "now": "2026-11-02T00:00:00Z",
+  "project": "00000000-0000-4000-a000-000000000001",
+  "payload": "{\"v\":1,\"project\":\"00000000-0000-4000-a000-000000000001\",\"issuedAt\":\"2026-11-01T00:00:00Z\",\"expiresAt\":\"2026-11-08T00:00:00Z\",\"badges\":[{\"kind\":\"self\",\"id\":\"self\",\"host\":\"submitator.com\",\"tree\":[{\"t\":\"a\",\"a\":{\"href\":\"https://submitator.com?ref=00000000-0000-4000-a000-000000000001\",\"data-sbm-ref\":\"00000000-0000-4000-a000-000000000001\",\"target\":\"_blank\",\"rel\":\"noopener noreferrer\",\"title\":\"Featured on Submitator\"},\"s\":[[\"text-decoration\",\"none\"],[\"display\",\"inline-block\"]],\"c\":[{\"t\":\"span\",\"s\":[[\"display\",\"inline-flex\"],[\"align-items\",\"center\"],[\"gap\",\"8px\"],[\"padding\",\"8px 12px\"],[\"background\",\"#0a0a0a\"],[\"color\",\"#ffffff\"],[\"border\",\"2px solid #CCFF00\"],[\"border-radius\",\"4px\"],[\"box-shadow\",\"3px 3px 0 #CCFF00\"],[\"font-family\",\"ui-sans-serif,system-ui,-apple-system,sans-serif\"]],\"c\":[{\"t\":\"svg\",\"a\":{\"xmlns\":\"http://www.w3.org/2000/svg\",\"width\":\"18\",\"height\":\"18\",\"viewBox\":\"0 0 24 24\",\"fill\":\"none\",\"stroke\":\"#CCFF00\",\"stroke-width\":\"2.5\",\"stroke-linecap\":\"round\",\"stroke-linejoin\":\"round\"},\"c\":[{\"t\":\"circle\",\"a\":{\"cx\":\"12\",\"cy\":\"12\",\"r\":\"10\"}},{\"t\":\"path\",\"a\":{\"d\":\"m9 12 2 2 4-4\"}}]},{\"t\":\"span\",\"s\":[[\"display\",\"flex\"],[\"flex-direction\",\"column\"],[\"line-height\",\"1\"],[\"gap\",\"3px\"]],\"c\":[{\"t\":\"span\",\"s\":[[\"font-size\",\"10px\"],[\"font-weight\",\"600\"],[\"letter-spacing\",\"1px\"],[\"text-transform\",\"uppercase\"],[\"color\",\"#CCFF00\"]],\"c\":[\"Featured on\"]},{\"t\":\"span\",\"s\":[[\"font-size\",\"15px\"],[\"font-weight\",\"800\"],[\"letter-spacing\",\"0.3px\"]],\"c\":[\"SUBMITATOR\"]}]}]}]}]},{\"kind\":\"directory\",\"id\":\"d_00000000-0000-4000-8000-000000000401\",\"name\":\"Kept Dir\",\"host\":\"kept-dir.test\",\"tree\":[{\"t\":\"a\",\"a\":{\"href\":\"https://kept-dir.test\"},\"c\":[{\"t\":\"img\",\"a\":{\"src\":\"https://kept-dir.test/b.svg\",\"alt\":\"Kept\"}}]}]},{\"kind\":\"directory\",\"id\":\"d_00000000-0000-4000-8000-000000000410\",\"name\":\"Kept Too Dir\",\"host\":\"kept-too-dir.test\",\"tree\":[{\"t\":\"a\",\"a\":{\"href\":\"https://kept-too-dir.test\"},\"c\":[\"Kept too\"]}]},{\"kind\":\"custom\",\"id\":\"c_00000000-0000-4000-9000-000000000402\",\"host\":\"kept-paste.test\",\"tree\":[{\"t\":\"a\",\"a\":{\"href\":\"https://kept-paste.test\"},\"c\":[{\"t\":\"img\",\"a\":{\"src\":\"https://kept-paste.test/b.svg\",\"alt\":\"Kept\"}}]}]}]}",
+  "expect": {
+    "ok": true,
+    "ids": [
+      "self",
+      "d_00000000-0000-4000-8000-000000000401",
+      "d_00000000-0000-4000-8000-000000000410",
+      "c_00000000-0000-4000-9000-000000000402"
+    ],
+    "skipped": 0
+  }
+}

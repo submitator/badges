@@ -1,0 +1,5 @@
+The walls/server-*.json next to this file are written by submitator-backend:
+  bin/rails badge_wall:contract_fixtures OUT=<this repository>/test/fixtures/contract-v1
+from synthetic badge markup (lib/badge_wall/contract_fixtures.rb there).
+backend commit: d97f24d0ecf61d1ef3b164882c25f36e4e9685fb
+Never edit them by hand: regenerate them, and commit them together with this file.
