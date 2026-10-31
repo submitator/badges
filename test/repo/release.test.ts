@@ -37,7 +37,7 @@ describe("release guards", () => {
     "v1.2.3",
     "",
     undefined,
-  ])("check-version refuses %s, which the server cannot read", (version) => {
+  ])("check-version refuses %j, which the server cannot read", (version) => {
     expect(versionProblems(version)).not.toEqual([]);
   });
 
