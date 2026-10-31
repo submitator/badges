@@ -41,8 +41,9 @@ no `apiUrl`, or any `apiUrl` on `api.submitator.com` (with a path, a port or a t
   package's own stylesheet. Either way the wall's root carries `contain: paint` in its own
   `style` attribute, so no badge can draw outside the strip, even where a
   Content-Security-Policy blocks the wall's `<style>` element.
-- It sends no cookies, reads no secrets and no configuration (only `NODE_ENV` and
-  `NEXT_RUNTIME`, to label its request), has no telemetry, and never fetches from a browser.
+- It sends no cookies, reads no secrets and no configuration (of your environment variables only
+  `NODE_ENV` and `NEXT_RUNTIME`: to mark development servers, and to spot Next.js so it can use
+  Next's cache), has no telemetry, and never fetches from a browser.
 
 ## If a key leaks
 

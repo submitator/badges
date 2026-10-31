@@ -273,10 +273,13 @@ exports only.
   usual ones, such as `Accept-Encoding`). No telemetry.
 - Under Next.js it also makes a `data:` request, which Next.js caches and which never leaves your
   server: it gives the page its lifetime (see Freshness and caches).
-- It reads no secrets and no configuration: it only checks `NODE_ENV` and `NEXT_RUNTIME`, to label
-  its request.
-- We keep the time of the last request, the package version and the framework's name, to show
-  your install on the Configure Badges page, and log your server's IP at most once an hour.
+- It reads no secrets and no configuration. Of your environment variables it reads only
+  `NODE_ENV` and `NEXT_RUNTIME`: to mark requests from development servers, and to spot Next.js,
+  so it can use Next's cache.
+- At most once an hour we note when your server fetched, with which package version and
+  framework, to show your install on the Configure Badges page. Like every request to our API,
+  each one is also written to our server log with your server's IP address, which our host keeps
+  for up to 30 days.
 - In a browser, `fetchWall` returns `null` and sends nothing.
 
 ## Runtimes
