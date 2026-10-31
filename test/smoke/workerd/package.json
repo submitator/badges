@@ -1,0 +1,9 @@
+{
+  "name": "smoke-workerd",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Miniflare, to run the smoke checks in workerd (the Cloudflare Workers runtime). Install with npm install --prefix test/smoke/workerd.",
+  "dependencies": {
+    "miniflare": "4.20260730.0"
+  }
+}
