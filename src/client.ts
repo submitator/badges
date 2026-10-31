@@ -254,8 +254,9 @@ export function createClient(env: ClientEnv, slots: Map<string, Slot> = new Map(
     }
   }
 
+  /** Logs a message once per client. A silenced call does not use it up. */
   function once(sink: Sink, key: string, message: string): void {
-    if (warnedOnce.has(key)) return;
+    if (sink === null || warnedOnce.has(key)) return;
     warnedOnce.add(key);
     emit(sink, message);
   }
@@ -542,7 +543,7 @@ export function createClient(env: ClientEnv, slots: Map<string, Slot> = new Map(
     if (slot.pendingToken !== token) return;
     slot.failedAt = now;
     slot.backoffMs = outcome.backoffMs;
-    if (!slot.warned.has(outcome.reason)) {
+    if (options.sink !== null && !slot.warned.has(outcome.reason)) {
       slot.warned.add(outcome.reason);
       const alive = slot.wall !== null && now < slot.expiresAtMs;
       const hint =
@@ -583,7 +584,8 @@ export function createClient(env: ClientEnv, slots: Map<string, Slot> = new Map(
     const options = normalize(input, sink);
     if (options === null) return null;
 
-    // Read no clock before this task boundary: Next.js prerenders forbid it.
+    // Read no clock before this task boundary. In a Next.js 16 prerender, a clock
+    // read before any uncached I/O fails with blocking-prerender-current-time.
     await env.macrotask();
     if (options.next) await markLifetime(options);
 

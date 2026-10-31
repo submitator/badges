@@ -609,6 +609,13 @@ describe("options", () => {
     expect(t.logs[0]).toContain(note);
   });
 
+  test("a silenced call does not use up a warning", async () => {
+    const t = setup();
+    await t.call({ project: "nope", log: false });
+    await t.call({ project: "nope" });
+    expect(t.logs).toHaveLength(1);
+  });
+
   test("log: false silences every warning; a log function gets them", async () => {
     const quiet = setup();
     await quiet.call({ project: "nope", log: false });
