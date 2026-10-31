@@ -40,6 +40,12 @@ Package details the server can rely on:
 - The node limit counts text nodes and elements alike.
 - Lengths count characters (code points), not UTF-16 units or bytes.
 - Spaces around a style value are dropped, not refused.
+- Quotes in a style value are read by scanning it left to right: `'` or `"`
+  opens a string that only the same quote closes, and parentheses count
+  only outside strings. The value is refused when it ends inside a string,
+  or when a parenthesis outside strings closes too early or stays open.
+  `hand-edges.json` has `"Bob's Font", sans-serif`, `'a"b'` and `"(new)"`,
+  all accepted; a tally of each quote character would refuse the first two.
 - `\s` in the contract's patterns (`^https?://[^\s]`, `url\s*\(` and the
   other style tokens) is JavaScript's: besides ASCII whitespace it matches
   U+00A0, U+1680, U+2000 to U+200A, U+2028, U+2029, U+202F, U+205F, U+3000

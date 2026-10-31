@@ -572,6 +572,23 @@ export const EDGE_BADGES = [
     ],
   },
   {
+    // Quotes in styles are read by scanning: inside a string only the same
+    // quote closes it, and parentheses count only outside strings. A tally of
+    // each quote character would refuse this one and customId(23).
+    kind: "directory",
+    id: directoryId(23),
+    name: "Bob's Fonts",
+    host: "bobs-fonts.example.com",
+    tree: [
+      {
+        t: "a",
+        a: { href: "https://bobs-fonts.example.com/p/ai-tool", target: "_blank" },
+        s: [["font-family", '"Bob\'s Font", sans-serif']],
+        c: ["Listed on Bob's Fonts"],
+      },
+    ],
+  },
+  {
     kind: "custom",
     id: customId(20),
     name: 'Tom & Jerry\'s "badge" <3',
@@ -598,6 +615,17 @@ export const EDGE_BADGES = [
     id: customId(21),
     name: "Logo without alt",
     tree: [{ t: "img", a: { src: "https://cdn.example.com/logo.png", width: "88", height: "31" } }],
+  },
+  // Two more quoted style values, on custom badges without a name.
+  {
+    kind: "custom",
+    id: customId(22),
+    tree: [{ t: "span", s: [["content", '"(new)"']], c: ["New"] }],
+  },
+  {
+    kind: "custom",
+    id: customId(23),
+    tree: [{ t: "span", s: [["font-family", "'a\"b'"]], c: ["A quoted font"] }],
   },
 ];
 
@@ -822,8 +850,11 @@ export const WALL_CASES = [
         directoryId(21),
         directoryId(22),
         null,
+        directoryId(23),
         customId(20),
         customId(21),
+        customId(22),
+        customId(23),
       ],
       skipped: 0,
     },
