@@ -197,13 +197,15 @@ function readStyle(value: unknown): ReadonlyArray<readonly [string, string]> | n
     if (!STYLE_PROPERTY_PATTERN.test(property)) {
       refuse("style", `style property "${clip(property)}" is malformed`);
     }
-    if (FORBIDDEN_PROPERTY_SET.has(property))
+    if (FORBIDDEN_PROPERTY_SET.has(property)) {
       refuse("style", `style property ${property} is refused`);
+    }
     // Values come trimmed; surrounding spaces are dropped, never refused.
     const text: string = declaration[1].replace(/^ +| +$/g, "");
     if (text.length === 0) refuse("style", `${property} has an empty value`);
-    if (!withinLength(text, LIMITS.styleValue))
+    if (!withinLength(text, LIMITS.styleValue)) {
       refuse("limits", `${property} is over 1024 characters`);
+    }
     if (STYLE_FORBIDDEN_CHARACTERS.test(text)) {
       refuse("style", `${property} has one of ; { } < > \\ ! or a control character`);
     }
@@ -211,8 +213,9 @@ function readStyle(value: unknown): ReadonlyArray<readonly [string, string]> | n
       refuse("style", `${property} has url(, expression(, @import, image-set( or a comment`);
     }
     if (!balanced(text)) refuse("style", `${property} has unbalanced quotes or parentheses`);
-    if (property === "position" && /fixed/i.test(text))
+    if (property === "position" && /fixed/i.test(text)) {
       refuse("style", "position fixed is refused");
+    }
     declarations.push(Object.freeze([property, text] as const));
   }
   return declarations.length > 0 ? Object.freeze(declarations) : null;
