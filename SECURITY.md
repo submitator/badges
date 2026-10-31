@@ -35,9 +35,12 @@ no `apiUrl`, or any `apiUrl` on `api.submitator.com` (with a path, a port or a t
   enough: someone who controls the API host but not the signing key cannot forge a wall.
 - It checks every badge against the contract (tags, attributes, URLs, styles, structure, sizes)
   and leaves out any badge that fails. The server runs the same checks before it signs.
-- Every renderer writes elements through the framework's own escaping, never HTML strings, and
-  the wall's root carries `contain: paint` in its own `style` attribute, so no badge can draw
-  outside the strip, even where a Content-Security-Policy blocks the wall's `<style>` element.
+- The React, Vue, Svelte and Astro components write elements through the framework's own
+  escaping, never HTML strings. `wallToHtml`, for servers without a framework, returns one HTML
+  string in which every text and attribute value is escaped; the only raw text in it is the
+  package's own stylesheet. Either way the wall's root carries `contain: paint` in its own
+  `style` attribute, so no badge can draw outside the strip, even where a
+  Content-Security-Policy blocks the wall's `<style>` element.
 - It sends no cookies, reads no secrets and no configuration (only `NODE_ENV` and
   `NEXT_RUNTIME`, to label its request), has no telemetry, and never fetches from a browser.
 
