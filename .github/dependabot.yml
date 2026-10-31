@@ -19,6 +19,11 @@ updates:
       - dependency-name: react-dom
         update-types: ["version-update:semver-major"]
       - dependency-name: vue34
+      # Node.js types follow the line in .nvmrc (24, the newest the CI matrix
+      # runs; engines start at 20.9): types of a newer major would let code
+      # use APIs no supported Node.js has.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: npm
     directory: /test/smoke/workerd
     schedule:
