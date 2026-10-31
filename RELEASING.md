@@ -9,16 +9,17 @@ Done on 2026-10-31:
 
 - npm: the user `submitator` (its scope is `@submitator`, as for `submitator-mcp`), with 2FA for
   sign-in and writes. There is no npm organization.
-- GitHub: the repo `submitator/badges`, private for now, with the environment `npm` (deployment
-  tags `v*`).
+- GitHub: the repo `submitator/badges`, public, with the environment `npm` (deployment tags
+  `v*`).
 - The production keys (section 1): the primary's seed and id in Koyeb, the backup's seed in your
   password manager, both public keys pinned in `src/keys.ts`, `SECURITY.md` and the backend.
+- 1.0.0, the first release, from your laptop (section 2), without provenance.
 
-Still to do, in this order: the first release from your laptop (section 2), and trusted
-publishing once the repo is public (section 3).
+Still to do: trusted publishing (section 3), right before the next release.
 
 You need npm 11.15.0 or later and Node.js 22.14 or later for `npm stage` (`npm -v`; to update:
-`npm install --global npm@latest`).
+`npm install --global npm@11`. npm 12 needs Node.js 24.15 or later: with an older Node.js 24 its
+install stops with `EBADENGINE`).
 
 ## 1. Production keys (once, before 1.0.0)
 
