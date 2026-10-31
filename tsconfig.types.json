@@ -1,0 +1,12 @@
+{
+  // Checks the hand-written Svelte and Astro declarations against the built
+  // core in dist/, the declaration files included. lint:package runs it after
+  // the build.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "skipLibCheck": false,
+    "types": []
+  },
+  "include": ["test/types"],
+  "exclude": []
+}

@@ -19,5 +19,7 @@
     "types": ["node"],
     "noEmit": true
   },
-  "include": ["src", "test", "vitest.config.ts", "vitest.astro.config.ts"]
+  "include": ["src", "test", "vitest.config.ts", "vitest.astro.config.ts"],
+  // Needs dist/: tsconfig.types.json checks it after the build.
+  "exclude": ["test/types"]
 }
