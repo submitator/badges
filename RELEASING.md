@@ -51,7 +51,7 @@ provenance. While it stays private, the README's links to repo files open GitHub
 page and show visitors a 404; they work once the repo is public. CONTRACT.md and SECURITY.md
 also ship in the package, so the npm page's Code tab and `node_modules` have them.
 
-1. In `~/real_work/submitator-badges`, on an up-to-date `main` with a clean tree:
+1. In your clone of this repo, on an up-to-date `main` with a clean tree:
 
    ```sh
    npm ci
