@@ -300,6 +300,29 @@ describe("memory", () => {
     expect(t.wallRequests()).toHaveLength(2);
   });
 
+  test("a wall stamped up to 10 minutes ahead of the clock still keeps older walls out", async () => {
+    const t = setup();
+    t.replyWith(() => ok(envelopeFor({ issuedAt: T0 + 10 * MINUTE })));
+    const ahead = await t.call();
+    vi.advanceTimersByTime(60_000);
+    t.replyWith(() => ok(envelopeFor({ issuedAt: T0 - MINUTE })));
+    await t.call();
+    await t.settle();
+    expect(await t.call()).toBe(ahead);
+  });
+
+  // A server clock running a year fast once: its wall must not stay up for a year.
+  test("a wall stamped further ahead of the clock gives way to the next wall", async () => {
+    const t = setup();
+    t.replyWith(() => ok(envelopeFor({ issuedAt: T0 + 365 * DAY })));
+    await t.call();
+    vi.advanceTimersByTime(60_000);
+    t.replyWith(() => ok(envelopeFor({ issuedAt: T0 })));
+    await t.call();
+    await t.settle();
+    expect((await t.call())?.issuedAt).toBe(iso(T0));
+  });
+
   test("stops serving a wall once it expires", async () => {
     const t = setup();
     t.replyWith(() => ok(envelopeFor({ issuedAt: T0 - MINUTE, lifetime: 2 * MINUTE })));

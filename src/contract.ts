@@ -91,6 +91,11 @@ export interface ClientTimings {
   readonly retryAfterMaxMs: number;
   /** Projects kept in memory; the least recently used goes first. */
   readonly maxSlots: number;
+  /**
+   * How far a wall's issuedAt may run ahead of this server's clock and still
+   * keep walls with an older issuedAt out of memory.
+   */
+  readonly clockSkewMs: number;
 }
 
 export const CLIENT: ClientTimings = Object.freeze({
@@ -103,6 +108,7 @@ export const CLIENT: ClientTimings = Object.freeze({
   failureBackoffMs: 30_000,
   retryAfterMaxMs: 600_000,
   maxSlots: 100,
+  clockSkewMs: 600_000,
 });
 
 /** Envelope `keyId` (section 3). */

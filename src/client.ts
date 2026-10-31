@@ -166,6 +166,19 @@ function elapsed(now: number, then: number): number {
   return now >= then ? now - then : Number.POSITIVE_INFINITY;
 }
 
+/**
+ * Whether a verified wall takes the place of the one in memory. A wall with an
+ * older issuedAt never does (an older copy from a cache or another server),
+ * unless the one in memory is stamped more than 10 minutes ahead of this
+ * clock: one wall from a server clock running fast must not hold every later
+ * wall back until it expires.
+ */
+function replaces(slot: Slot, issuedAtMicros: bigint, now: number): boolean {
+  if (slot.wall === null || issuedAtMicros >= slot.issuedAtMicros) return true;
+  const latestTrusted = (BigInt(Math.floor(now)) + BigInt(CLIENT.clockSkewMs)) * 1000n;
+  return slot.issuedAtMicros > latestTrusted;
+}
+
 function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -523,8 +536,7 @@ export function createClient(env: ClientEnv, slots: Map<string, Slot> = new Map(
     const now = env.now();
     if (outcome.ok) {
       const fresh = outcome.fresh;
-      if (fresh !== null && (slot.wall === null || fresh.issuedAtMicros >= slot.issuedAtMicros)) {
-        // Never flip back to an older wall (an older copy from a cache or another server).
+      if (fresh !== null && replaces(slot, fresh.issuedAtMicros, now)) {
         slot.wall = fresh.wall;
         slot.expiresAtMs = fresh.expiresAtMs;
         slot.issuedAtMicros = fresh.issuedAtMicros;
