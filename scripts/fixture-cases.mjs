@@ -581,7 +581,7 @@ export const EDGE_BADGES = [
         a: { title: 'Tom & Jerry\'s "badge" <3', "aria-label": "A styled badge" },
         s: [
           ["font-family", '"Segoe UI",sans-serif'],
-          ["width", "calc(100% - var(--sbm-gap, 4px))"],
+          ["width", "calc(100% - var(--badge-gap, 4px))"],
           ["--badge-accent", "#CCFF00"],
           ["color", "var(--badge-accent)"],
           ["color", "red"],

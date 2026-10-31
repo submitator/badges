@@ -51,3 +51,15 @@ Package details the server can rely on:
 
 `body` is the exact response body. They come from `scripts/write-fixtures.mjs`
 too, signed with the test key.
+
+## rendered/*.html
+
+`wallToHtml` output for every accepted wall that has badges:
+`<wall name>.marquee.html` and `<wall name>.row.html`, each followed by one
+newline (a wall with fewer than 3 badges renders as a row either way). The
+root's `data-sbm-wall` attribute holds the package version; here it reads
+`VERSION`, so the files stay the same from one release to the next. The
+package writes them (`npx vitest run -u test/unit/html.test.ts`) and checks
+them on every run. The server's `BadgeMarker`, `BadgeChecker` and
+`DirectoryBadgeChecker` must find the self badge and every directory host
+outside `span.sbm-cb` in them.
