@@ -1,0 +1,10 @@
+{
+  "name": "react18-floor",
+  "version": "0.0.0",
+  "private": true,
+  "description": "React 18.3, the oldest React the package supports, for the render tests. An npm workspace, because npm cannot install react-dom 18 next to React 19 under an alias.",
+  "dependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  }
+}

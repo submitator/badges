@@ -100,6 +100,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "workspaces": [
+    "test/floors/react18"
+  ],
   "scripts": {
     "build": "node scripts/write-version.mjs --check && tsc -p tsconfig.build.json",
     "prepack": "npm run build",
@@ -112,10 +115,22 @@
     "version": "node scripts/write-version.mjs && git add src/version.ts"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
+    "@sveltejs/vite-plugin-svelte": "7.3.1",
     "@types/node": "24.19.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "astro": "7.4.4",
+    "happy-dom": "21.0.4",
     "parse5": "8.0.1",
     "prettier": "3.9.10",
+    "publint": "0.3.25",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "svelte": "5.57.3",
     "typescript": "7.0.2",
-    "vitest": "5.0.5"
+    "vitest": "5.0.5",
+    "vue": "3.5.44",
+    "vue34": "npm:vue@3.4.38"
   }
 }
