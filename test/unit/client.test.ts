@@ -130,6 +130,7 @@ function setup(overrides: Partial<ClientEnv> = {}) {
   const client = createClient(env, slots);
   return {
     client,
+    env,
     requests,
     logs,
     slots,
@@ -347,6 +348,21 @@ describe("memory", () => {
     await t.call({ project: other.toUpperCase() });
     await t.call({ apiUrl: "http://127.0.0.1:3001/" });
     expect(t.wallRequests()).toHaveLength(4);
+  });
+
+  // Copies of the package in one process share their memory (a global symbol):
+  // a copy that dropped a leaked key must not serve a wall another copy verified with it.
+  test("keeps separate memory per pinned key set", async () => {
+    const t = setup();
+    const backup = { "k202611-b": "PUAXw-hDiVqStwqnTRt-vJyYLM8uxJaMwM1V8Sr0Zgw" };
+    const pinsLeaked = createClient(t.env, t.slots, { ...KEYS, ...backup });
+    const droppedIt = createClient(t.env, t.slots, backup);
+    expect(await pinsLeaked.fetchWall({ project: PROJECT, apiUrl: API })).not.toBeNull();
+    expect(await droppedIt.fetchWall({ project: PROJECT, apiUrl: API })).toBeNull();
+    expect(t.wallRequests()).toHaveLength(2);
+    expect(t.logs).toEqual([
+      expect.stringContaining("signed with a key this package does not know (test-rfc8032-1)"),
+    ]);
   });
 
   test("evicts the least recently used project past 100", async () => {

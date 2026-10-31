@@ -257,16 +257,32 @@ function skippedSummary(skips: readonly Skip[]): string {
   return `${count} left out because they failed the checks (${reasons}): the others are shown`;
 }
 
+/**
+ * A key set's fingerprint for the slot key: its entries sorted by key id, as
+ * JSON. Copies of the package that pin other keys never share a slot, so none
+ * serves a wall (or skips checking an identical envelope) that only another
+ * copy's keys verified.
+ */
+function keySetOf(keys: Readonly<Record<string, string>>): string {
+  return JSON.stringify(Object.entries(keys).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)));
+}
+
 export interface Client {
   fetchWall(options: FetchWallOptions): Promise<Wall | null>;
 }
 
 /**
  * The fetchWall logic over injected surroundings. `slots` is the memory; the
- * package's own fetchWall shares one through a global symbol.
+ * package's own fetchWall shares one through a global symbol. `pinned` are the
+ * keys this copy of the package trusts when there is no publicKeys option.
  */
-export function createClient(env: ClientEnv, slots: Map<string, Slot> = new Map()): Client {
+export function createClient(
+  env: ClientEnv,
+  slots: Map<string, Slot> = new Map(),
+  pinned: Readonly<Record<string, string>> = PUBLIC_KEYS,
+): Client {
   const warnedOnce = new Set<string>();
+  const pinnedKeySet = keySetOf(pinned);
 
   function emit(sink: Sink, message: string): void {
     if (sink === null) return;
@@ -332,8 +348,8 @@ export function createClient(env: ClientEnv, slots: Map<string, Slot> = new Map(
       return null;
     }
 
-    let keys: Readonly<Record<string, string>> = PUBLIC_KEYS;
-    let keySet = "default";
+    let keys: Readonly<Record<string, string>> = pinned;
+    let keySet = pinnedKeySet;
     if (input.publicKeys !== undefined) {
       if (isDefaultApiHost(base)) {
         once(
@@ -355,9 +371,8 @@ export function createClient(env: ClientEnv, slots: Map<string, Slot> = new Map(
         );
         return null;
       }
-      entries.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
       keys = Object.freeze(Object.fromEntries(entries) as Record<string, string>);
-      keySet = JSON.stringify(entries);
+      keySet = keySetOf(keys);
     }
 
     const revalidateSeconds = clamp(
