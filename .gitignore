@@ -4,3 +4,15 @@ coverage/
 *.tgz
 .DS_Store
 *.log
+# Example apps: build output, framework caches and the packed tarball they install.
+examples/.pack/
+examples/*/package-lock.json
+.next/
+next-env.d.ts
+.nuxt/
+.output/
+.data/
+.svelte-kit/
+examples/*/build/
+.astro/
+*.tsbuildinfo

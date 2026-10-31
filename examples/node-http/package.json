@@ -1,0 +1,17 @@
+{
+  "name": "example-node-http",
+  "version": "0.0.0",
+  "private": true,
+  "description": "@submitator/badges in a plain Node.js server: fetchWall and wallToHtml.",
+  "type": "module",
+  "scripts": {
+    "build": "node --check server.mjs",
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "@submitator/badges": "file:../.pack/submitator-badges.tgz"
+  },
+  "engines": {
+    "node": ">=20.9"
+  }
+}
