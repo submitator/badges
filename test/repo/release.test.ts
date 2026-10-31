@@ -50,8 +50,19 @@ describe("release guards", () => {
 describe("release scripts", () => {
   test("check-tag passes a tag that names the package and source version", () => {
     expect(tagProblems("v1.2.3", "1.2.3", "1.2.3")).toEqual([]);
-    expect(tagProblems("v1.3.0-rc.1", "1.3.0-rc.1", "1.3.0-rc.1")).toEqual([]);
+    expect(tagProblems("v1.2.0-rc.1", "1.2.0-rc.1", "1.2.0-rc.1")).toEqual([]);
   });
+
+  // The tag, package.json and src/version.ts agree, but the server would never record an install.
+  test.each(["v1.1.0-rc-1", "v10000.0.0"])(
+    "check-tag refuses %s, a version the server cannot read",
+    (tag) => {
+      const version = tag.slice(1);
+      expect(tagProblems(tag, version, version)).toEqual([
+        expect.stringContaining("not a release tag: v + a version our server reads"),
+      ]);
+    },
+  );
 
   test.each([
     ["1.2.3", "1.2.3", "1.2.3"],

@@ -1,7 +1,7 @@
 // Fails unless package.json's version is one our server reads: the version
 // grammar of its User-Agent pattern (CONTRACT.md section 9). The server never
 // records the installs of any other version. npm publish and npm stage publish
-// run it first (prepublishOnly).
+// run it first (prepublishOnly), and check-tag.mjs holds tags to the same grammar.
 //
 //   node scripts/check-version.mjs
 import { readFileSync } from "node:fs";
@@ -11,7 +11,7 @@ import { pathToFileURL } from "node:url";
 export const SERVER_VERSION = String.raw`\d{1,4}\.\d{1,4}\.\d{1,4}(?:-[0-9A-Za-z.]{1,20})?`;
 
 /** What SERVER_VERSION allows, for the error messages. */
-const SERVER_VERSION_RULE =
+export const SERVER_VERSION_RULE =
   "at most 4 digits a part, and a prerelease of at most 20 letters, digits and dots (1.2.0-rc.1, not 1.2.0-rc-1), with no build metadata";
 
 const VERSION = new RegExp(`^${SERVER_VERSION}$`);

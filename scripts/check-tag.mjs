@@ -1,19 +1,23 @@
 // Fails unless the pushed tag names the version being released: the tag is
-// v + package.json's version, and src/version.ts says the same. release.yml
-// runs it first.
+// v + package.json's version, src/version.ts says the same, and the version is
+// one our server reads (check-version.mjs). release.yml runs it first.
 //
 //   node scripts/check-tag.mjs v1.2.3
 import { readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
+import { SERVER_VERSION, SERVER_VERSION_RULE } from "./check-version.mjs";
 
-const TAG = /^v(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)$/;
+const TAG = new RegExp(`^v(${SERVER_VERSION})$`);
 
 /** The problems with releasing `tag` (empty when there are none). */
 export function tagProblems(tag, packageVersion, sourceVersion) {
   const problems = [];
   const match = TAG.exec(tag ?? "");
-  if (match === null) problems.push(`"${tag}" is not a release tag like v1.2.3`);
-  else if (match[1] !== packageVersion) {
+  if (match === null) {
+    problems.push(
+      `"${tag}" is not a release tag: v + a version our server reads, ${SERVER_VERSION_RULE}`,
+    );
+  } else if (match[1] !== packageVersion) {
     problems.push(`the tag says ${match[1]}, package.json says ${packageVersion}`);
   }
   if (sourceVersion !== packageVersion) {
