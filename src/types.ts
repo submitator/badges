@@ -27,7 +27,10 @@ export interface WallBadge {
   readonly kind: BadgeKind;
   /** `self`, `d_<directory id>` or `c_<custom badge id>`; absent when malformed. */
   readonly id?: string;
-  /** The directory's or the customer's name for the badge. */
+  /**
+   * The directory's name on a directory badge. A custom badge may carry the
+   * customer's name for it, or none. Absent on the self badge and when malformed.
+   */
   readonly name?: string;
   /** The normalized host of the badge's first link. */
   readonly host?: string;
