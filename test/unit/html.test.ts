@@ -101,7 +101,7 @@ describe("wallToHtml", () => {
     const html = wallToHtml(wallOf([selfLink(), ...CUSTOM_BADGES]));
     expect(html).not.toContain("\n");
     expect(html).toMatch(
-      /^<div class="sbm-wall sbm-wall-marquee" data-sbm-wall="[^"]+" style="--sbm-wall-duration:24s"><style>/,
+      /^<div class="sbm-wall sbm-wall-marquee" data-sbm-wall="[^"]+" style="position:relative;overflow:hidden;contain:paint;isolation:isolate;--sbm-wall-duration:24s"><style>/,
     );
     expect(html).toContain(
       '</style><div class="sbm-wall-track"><ul class="sbm-wall-list" role="list"><li class="sbm-wall-item">',

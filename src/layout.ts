@@ -10,7 +10,7 @@
 // with no alt at all; tabindex="-1" on every link that is aria-hidden; the
 // span.sbm-cb wrapper around custom badges. Never href, src, rel or target.
 
-import { CLASS, CSS, CUSTOM_BADGE_CLASS } from "./css.js";
+import { CLASS, CSS, CUSTOM_BADGE_CLASS, ROOT_STYLE } from "./css.js";
 import { renderableBadges } from "./parse.js";
 import type { ViewNode, Wall, WallBadge, WallNode, WallRenderOptions } from "./types.js";
 import { VERSION } from "./version.js";
@@ -122,7 +122,7 @@ function layout(wall: unknown, options: unknown): ViewNode | null {
       ],
       badges.map((badge) => item(badge, false, false)),
     );
-    return element("div", rootAttrs, [style, list]);
+    return element("div", rootAttrs, [style, list], ROOT_STYLE);
   }
 
   const count = badges.length;
@@ -149,5 +149,10 @@ function layout(wall: unknown, options: unknown): ViewNode | null {
   );
   const track = element("div", [["class", CLASS.track]], [list, copy]);
   const duration = Math.max(MARQUEE.minDurationSeconds, groupLength * MARQUEE.paceSeconds);
-  return element("div", rootAttrs, [style, track], [["--sbm-wall-duration", `${duration}s`]]);
+  return element(
+    "div",
+    rootAttrs,
+    [style, track],
+    [...ROOT_STYLE, ["--sbm-wall-duration", `${duration}s`]],
+  );
 }

@@ -112,7 +112,7 @@ describe("row", () => {
     for (const badges of [[selfLink()], [selfLink(), DIRECTORY_BADGES[0]]]) {
       const view = layoutWall(wallOf(badges));
       expect(attr(view!, "class")).toBe("sbm-wall sbm-wall-row");
-      expect(view?.style).toBeUndefined();
+      expect(view?.style?.map(([name]) => name)).not.toContain("--sbm-wall-duration");
       const { list, track } = parts(view);
       expect(track).toBeUndefined();
       expect(list.children).toHaveLength(badges.length);
@@ -253,6 +253,21 @@ describe("the root", () => {
     expect(CSS).not.toMatch(/[<>&"']/);
     expect(CSS.startsWith(".sbm-wall{")).toBe(true);
   });
+
+  // A CSP may block the style element yet allow style attributes, which badges use:
+  // `--p:fixed; position:var(--p)` passes every style check, and only containment stops it.
+  test.each(["marquee", "row"] as const)(
+    "%s: the root's own style attribute keeps every badge inside the strip",
+    (layout) => {
+      const style = layoutWall(three(), { layout })?.style ?? [];
+      expect(style.slice(0, 4)).toEqual([
+        ["position", "relative"],
+        ["overflow", "hidden"],
+        ["contain", "paint"],
+        ["isolation", "isolate"],
+      ]);
+    },
+  );
 });
 
 describe("the render guard", () => {

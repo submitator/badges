@@ -3,8 +3,22 @@
 // - Under reduced motion and in print the strip stands still, wraps every
 //   badge onto rows and hides the loop copy and the fill items.
 // - `contain: paint` keeps every badge inside the strip, whatever its styles.
+//   The root carries it in its own style attribute too (ROOT_STYLE).
 // - It holds none of < > & " ' so every framework writes it byte for byte.
 // Public knobs: --sbm-wall-gap (16px) and --sbm-wall-duration.
+
+/**
+ * Containment, on the root's own style attribute. A Content-Security-Policy
+ * can block the style element (a nonce left out) while it lets style
+ * attributes through, which badges use: without these, a badge styled with
+ * `--p:fixed; position:var(--p)` could cover the page.
+ */
+export const ROOT_STYLE: ReadonlyArray<readonly [string, string]> = Object.freeze([
+  Object.freeze(["position", "relative"] as const),
+  Object.freeze(["overflow", "hidden"] as const),
+  Object.freeze(["contain", "paint"] as const),
+  Object.freeze(["isolation", "isolate"] as const),
+]);
 
 /** Class names the package owns (distinct from the app's older sbm-badges snippet). */
 export const CLASS: {

@@ -256,7 +256,8 @@ exports only.
 
 - `style-src`: badges carry inline `style` attributes. Allow them with `'unsafe-inline'`, or keep
   `style-src` strict and add `style-src-attr 'unsafe-inline'`, then give the wall's `<style>`
-  element your nonce with the `nonce` option.
+  element your nonce with the `nonce` option. Without it the strip loses its layout and motion,
+  but the badges stay inside it: the root keeps its containment in its own `style` attribute.
 - `img-src`: `https:`, plus `http:` if one of your directories serves its badge image over http.
 - `script-src` and `connect-src` need nothing: the package runs no script in the browser for the
   badges and never calls our API from there.
@@ -328,7 +329,8 @@ Every log line starts with `[@submitator/badges]`. `log: false` silences them.
 - The test key `test-rfc8032-1` (RFC 8032 section 7.1, TEST 1) is public on purpose. The package
   accepts it only through `publicKeys`, which it refuses for our production API.
 - A host without our key cannot forge a wall. A badge that fails the checks is left out. The
-  wall's root uses `contain: paint`, so no badge can draw outside the strip.
+  wall's root carries `contain: paint` in its own `style` attribute, so no badge can draw outside
+  the strip, even where a CSP blocks the wall's `<style>` element.
 - [SECURITY.md](SECURITY.md) lists the keys and how to report a vulnerability:
   vlad@submitator.com.
 
