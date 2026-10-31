@@ -7,13 +7,13 @@
 //
 // --tarball    a tarball from `npm pack` (default: pack the repo now)
 // --save-page  write the served homepage to test/fixtures/contract-v1/pages/<app>.html
-//              and its entry in pages/manifest.json
+//              (and pages/manifest.json, the same for every app)
 // --latest     install the app's frameworks at @latest (the weekly CI job)
 // --no-install, --no-build  reuse what an earlier run left (local reruns only)
 //
 // Needs the repo's dev dependencies (parse5) and Node.js 24.15 or later.
 import { execFileSync, spawn } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { APPS } from "./apps.mjs";
@@ -124,40 +124,32 @@ async function pack() {
   return resolve(packDir, entry.filename);
 }
 
-function installedVersion(name) {
-  try {
-    const file = resolve(appDir, "node_modules", name, "package.json");
-    return JSON.parse(readFileSync(file, "utf8")).version;
-  } catch {
-    return null;
-  }
-}
-
-/** Writes the served homepage and its manifest entry for the backend's checks. */
-function savePage(html, packageVersion) {
+/**
+ * Writes the served homepage, and the manifest the backend's checks read. The
+ * manifest is the same for every app and every run, so CI jobs can merge them.
+ */
+function savePage(html) {
   mkdirSync(pagesDir, { recursive: true });
   writeFileSync(resolve(pagesDir, `${app}.html`), html);
-  const manifestFile = resolve(pagesDir, "manifest.json");
-  const manifest = existsSync(manifestFile)
-    ? JSON.parse(readFileSync(manifestFile, "utf8"))
-    : { pages: {} };
   const wall = expectedWall();
-  const versions = { node: process.versions.node };
-  for (const name of config.latest) versions[name] = installedVersion(name);
-  manifest.project = wall.project;
-  manifest.directoryHosts = wall.directoryHosts;
-  manifest.customHosts = wall.customHosts;
-  manifest.pages[app] = {
-    file: `${app}.html`,
-    framework: config.framework,
-    selfCheck: config.negative !== true,
-    package: packageVersion,
-    versions,
+  const pages = Object.keys(APPS)
+    .sort()
+    .map((name) => [
+      name,
+      {
+        file: `${name}.html`,
+        framework: APPS[name].framework,
+        // found: BadgeChecker finds the self badge. missing: a client-only render.
+        badge: APPS[name].negative === true ? "missing" : "found",
+      },
+    ]);
+  const manifest = {
+    project: wall.project,
+    directoryHosts: wall.directoryHosts,
+    customHosts: wall.customHosts,
+    pages: Object.fromEntries(pages),
   };
-  manifest.pages = Object.fromEntries(
-    Object.entries(manifest.pages).sort(([a], [b]) => (a < b ? -1 : 1)),
-  );
-  writeFileSync(manifestFile, `${JSON.stringify(manifest, null, 2)}\n`);
+  writeFileSync(resolve(pagesDir, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
 }
 
 const problems = [];
@@ -275,7 +267,7 @@ try {
   await waitForApp(60);
   const html = await checkApp(mock, packageVersion);
   if (config.bump !== undefined && problems.length === 0) await checkBump(mock);
-  if (flag("save-page")) savePage(html, packageVersion);
+  if (flag("save-page")) savePage(html);
 } catch (error) {
   problems.push(String(error?.message ?? error));
 } finally {
