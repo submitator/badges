@@ -1,6 +1,6 @@
 {
   "name": "@submitator/badges",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Submitator directory badges, fetched and checked on your server and written into the HTML it sends. React, Vue, Svelte, Astro.",
   "license": "MIT",
   "author": "Submitator <vlad@submitator.com>",
