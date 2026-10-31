@@ -670,6 +670,12 @@ export const SKIP_CASES = [
   ["expression( in a style value", "style", styled([["width", "expression(alert(1))"]])],
   ["@import in a style value", "style", styled([["font-family", "@import 'x'"]])],
   ["image-set( in a style value", "style", styled([["background", "image-set('a.png' 1x)"]])],
+  // Browsers read CSS functions and at-rules in any case.
+  ["URL( in capitals", "style", styled([["background", "URL(https://x.example/a.png)"]])],
+  ["url ( with a space", "style", styled([["background", "url (https://x.example/a.png)"]])],
+  ["EXPRESSION( in capitals", "style", styled([["width", "EXPRESSION(alert(1))"]])],
+  ["@IMPORT in capitals", "style", styled([["font-family", "@IMPORT 'x'"]])],
+  ["Image-Set( in mixed case", "style", styled([["background", "Image-Set('a.png' 1x)"]])],
   ["a comment in a style value", "style", styled([["position", "/**/fixed"]])],
   ["the behavior property", "style", styled([["behavior", "x"]])],
   ["the -moz-binding property", "style", styled([["-moz-binding", "none"]])],

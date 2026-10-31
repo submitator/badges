@@ -11,6 +11,7 @@ import {
   STYLE_PROPERTY_PATTERN,
   TAGS,
   TIMESTAMP_PATTERN,
+  URL_PATTERN,
 } from "../../src/contract.js";
 import { PUBLIC_KEYS } from "../../src/keys.js";
 
@@ -51,7 +52,14 @@ describe("the code says what CONTRACT.md says", () => {
     for (const pattern of [KEY_ID_PATTERN, STYLE_PROPERTY_PATTERN]) {
       expect(flat).toContain(pattern.source);
     }
-    expect(flat).toContain(`/${STYLE_FORBIDDEN_TOKENS.source}/i`);
+    expect(flat).toContain(`/${STYLE_FORBIDDEN_TOKENS.source}/${STYLE_FORBIDDEN_TOKENS.flags}`);
+  });
+
+  // Browsers read url(, @import and the URL scheme in any case: both checks must too.
+  test("the style tokens and the URL rule ignore case", () => {
+    expect(STYLE_FORBIDDEN_TOKENS.flags).toBe("i");
+    expect(URL_PATTERN.flags).toBe("i");
+    expect(flat).toContain(`\`${URL_PATTERN.source.replaceAll("\\/", "/")}\` (case-insensitive)`);
   });
 
   test("the timestamp pattern accepts and refuses what the contract's does", () => {
