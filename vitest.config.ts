@@ -1,5 +1,15 @@
 import { fileURLToPath } from "node:url";
+import { svelte } from "@sveltejs/vite-plugin-svelte";
 import { defineConfig } from "vitest/config";
+
+/**
+ * The shipped Svelte and Astro sources import the core as ../dist/index.js;
+ * tests point that at the TypeScript source, so they need no build.
+ */
+const distToSource = {
+  find: /^\.\.\/dist\/index\.js$/,
+  replacement: fileURLToPath(new URL("./src/index.ts", import.meta.url)),
+};
 
 /** React 18.3 lives in an npm workspace (test/floors/react18); see its package.json. */
 const react18 = (path: string) =>
@@ -64,6 +74,24 @@ export default defineConfig({
           include: ["test/render/vue.test.ts"],
           environment: "happy-dom",
           provide: { vueMinor: "3.4" },
+        },
+      },
+      {
+        plugins: [svelte({ configFile: false })],
+        resolve: { alias: [distToSource] },
+        test: {
+          name: "svelte",
+          include: ["test/render/svelte.server.test.ts"],
+          environment: "node",
+        },
+      },
+      {
+        plugins: [svelte({ configFile: false })],
+        resolve: { alias: [distToSource], conditions: ["browser"] },
+        test: {
+          name: "svelte-dom",
+          include: ["test/render/svelte.dom.test.ts"],
+          environment: "happy-dom",
         },
       },
     ],
