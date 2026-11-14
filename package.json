@@ -125,17 +125,17 @@
     "@types/node": "24.19.2",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
-    "astro": "7.4.4",
+    "astro": "7.4.10",
     "happy-dom": "21.0.4",
-    "parse5": "8.0.1",
+    "parse5": "8.1.1",
     "prettier": "3.9.10",
     "publint": "0.3.25",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "svelte": "5.57.3",
     "typescript": "7.0.2",
-    "vitest": "5.0.5",
-    "vue": "3.5.44",
+    "vitest": "5.1.0",
+    "vue": "3.5.45",
     "vue34": "npm:vue@3.4.38"
   }
 }
